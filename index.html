@@ -65,7 +65,7 @@
                 <thead>
                     <tr>
                         <th data-field="CustItemNo">Customer Item No</th>
-                        <th data-field="PetItemNo">Item No</th>
+                        <th data-field="ItemNo">Item No</th>
                         <th data-field="ItemName">Item Name</th>
                         <th data-field="Year" data-visible="false">Year</th>
                         <th data-field="Period" data-visible="false">Period</th>
@@ -118,19 +118,8 @@
     <script>
     $(document).ready(function() {
         
-        if (location.search.indexOf('key=')>=0){
-            var key = getUrlParameter('key');  
-                if(key !==null){
-                    
-                    keylist(key);
-
-                }else{
-
-                }
-            }else{
-
-        }
-        
+        keylist(GetKey());
+       
     } );   
   
     </script>

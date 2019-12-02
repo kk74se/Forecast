@@ -65,3 +65,20 @@ function TableActions (value, row, index) {
         '</button>'
     ].join('');
 }
+
+function GetKey(){
+    if (location.search.indexOf('key=')>=0){
+        var key = getUrlParameter('key');  
+            if(key !==null){
+
+                return key;
+
+            }else{
+
+            }
+        }else{
+
+    }
+    
+}
+
