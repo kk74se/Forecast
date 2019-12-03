@@ -35,7 +35,7 @@ if (isset($_GET['key'])) {
 //$objConnect = new PDO("mysql:host=$FCADR;dbname=$FCDB", $FCUID, $FCPWD);
 
 try {
-    $objConnect = new PDO("mysql:host=$FCADR;dbname=$FCDB", $FCUID, $FCPWD);
+    $objConnect = new PDO("mysql:host=$FCADR;dbname=$FCDB;charset=UTF8", $FCUID, $FCPWD);
     // set the PDO error mode to exception
     $objConnect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
@@ -76,12 +76,27 @@ $objConnect = null;
 
 if ($action == 'updatelist') { 
 
+$return_arr = array();
 //Get Key
-if (isset($_POST['key'])) {
-    if (is_numeric(test_input($_POST['key']))){
-        $key=test_input($_POST['key']);
+if (isset($_POST['Key'])) {
+    if (is_numeric(test_input($_POST['Key']))){
+        $Key=test_input($_POST['Key']);
     }else{
         $return_arr['Error'] = "nologin";
+        echo json_encode($return_arr);
+        exit();
+    }   
+} else {
+    $return_arr['Error'] = "nokey";
+    echo json_encode($return_arr);
+    exit();
+}
+
+if (isset($_POST['Index'])) {
+    if (is_numeric(test_input($_POST['Index']))){
+        $Index=test_input($_POST['Index']);
+    }else{
+        $return_arr['Error'] = "Index missing";
         echo json_encode($return_arr);
         exit();
     }   
@@ -111,14 +126,6 @@ if (isset($_POST['Period'])) {
 	$Period = test_input($_POST['Period']);
 } else {
 	$return_arr['Error'] = "Period missing";
-	echo json_encode($return_arr);
-	exit();
-}
-
-if (isset($_POST['One'])) {
-	$One = test_input($_POST['One']);
-} else {
-	$return_arr['Error'] = "One missing";
 	echo json_encode($return_arr);
 	exit();
 }
@@ -156,7 +163,7 @@ if (isset($_POST['Five'])) {
 }
 
 try {
-    $objConnect = new PDO("mysql:host=$FCADR;dbname=$FCDB", $FCUID, $FCPWD);
+    $objConnect = new PDO("mysql:host=$FCADR;dbname=$FCDB;charset=UTF8", $FCUID, $FCPWD);
     // set the PDO error mode to exception
     $objConnect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
@@ -169,22 +176,22 @@ $objQuery = $objConnect->prepare("update petainer_fcast.Key a
     JOIN petainer_fcast.ForecastData b on a.Customer = b.Customer
 	and a.Year = b.Year
 	and a.Period = b.Period
-    set b .1 = '$One'
-	,b .2 = '$Two'
-	,b .3 = '$Three'
-	,b .4 = '$Four'
-	,b .5 = '$Five'
-    where a.Key = '$key'
-	and b.PetItemNo = '$ItemNo';DECLARE @check Int = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;select @check as Resultat;COMMIT;"); 
+    set b.2 = '$Two'
+	,b.3 = '$Three'
+	,b.4 = '$Four'
+	,b.5 = '$Five'
+    where a.Key = '$Key'
+	and b.PetItemNo = '$ItemNo'"); 
 
 $objQuery->execute();
 
+$Resultat = $objQuery->rowCount();
 
-while ( $row = $objQuery->fetch(PDO::FETCH_ASSOC) ) {
-	$return_arr['Resultat'] = $row['Resultat'];
-}
+$return_arr['Resultat'] = $Resultat;
+$return_arr['Index'] = $Index;
 
 echo json_encode($return_arr);
+
   
 $objConnect = null;
 

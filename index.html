@@ -10,55 +10,41 @@
     <meta name="author" content="">
 
     <title>Forecast</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
     
+    <link href="css/bootstrap.min.css" rel="stylesheet">   
     <link href="css/items.css" rel="stylesheet">
-    
-    <!-- Latest compiled and minified CSS -->
     <link href="css/plugins/bootstrap-table.css" rel="stylesheet">
     <link href="css/plugins/bootstrap-editable.css" rel="stylesheet">
 
-
-    <!-- jQuery -->
     <script src="js/jquery.min.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.bundle.js"></script>
-       
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="js/plugins/bootstrap-table.js"></script>
-    
+    <script src="js/bootstrap.bundle.js"></script>  
+    <script src="js/plugins/bootstrap-table.js"></script>   
     <script src="js/plugins/bootstrap-editable.js"></script>
-    <script src="js/plugins/bootstrap-table-editable.js"></script>
-    
-    <script src="js/plugins/moment-with-locales.min.js"></script>
-    
+    <script src="js/plugins/bootstrap-table-editable.js"></script>    
+    <script src="js/plugins/moment-with-locales.min.js"></script>    
     <script src="https://kit.fontawesome.com/f99af2746e.js" crossorigin="anonymous"></script>
-
-
-
+    
 </head>
 
 <body>
-
-<div class="container-fluid">
+    
+<div class="container-fluid">    
     
     <div class="row">
         <div class="padtop15 col-md-2">    
             <a><img class="img-fluid" src="img/logo.png" ALT="Petainer" WIDTH=288 HEIGHT=60></a>
         </div>
-        <div class="col-md-8 padtop15">
+        <div class="col-md-4 padtop15">
             <a class="item-text" id="customerheader"></a>
         </div>     
-        <div class="col-md-2 padtop15">
-            <button type="button" style="width:100%; height:100%;" class="btn btn-success btn-block btn-lg mr-auto" id="updateforecastbutton"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Update forecast</button>
+        <div class="col-md-4 padtop15">
+            <a class="item-text" id="updateheader"></a>
         </div> 
-    </div>
+        <div class="col-md-2 padtop15">
+            <button type="button" style="width:100%; height:100%;" class="btn btn-success btn-block btn-lg" id="updateforecastbutton"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Update forecast</button>
+        </div> 
+    </div> 
     
-
-
     <div class="row">
         <div class="col-12 padtop15">
             <table class="itemtabletext" data-toggle="table" id="itemtable">
@@ -69,60 +55,29 @@
                         <th data-field="ItemName">Item Name</th>
                         <th data-field="Year" data-visible="false">Year</th>
                         <th data-field="Period" data-visible="false">Period</th>
-                        <th data-field="1" data-editable="false">1</th>
-                        <th data-field="2" data-editable="true">2</th>
-                        <th data-field="3" data-editable="true">3</th>
-                        <th data-field="4" data-editable="true">4</th>
-                        <th data-field="5" data-editable="true">5</th>
+                        <th data-field="One" data-editable="false">1</th>
+                        <th data-field="Two" data-editable="true">2</th>
+                        <th data-field="Three" data-editable="true">3</th>
+                        <th data-field="Four" data-editable="true">4</th>
+                        <th data-field="Five" data-editable="true">5</th>
+                        <th data-field="Status">Status</th>
                     </tr>
                 </thead>                               
             </table> 
         </div>
     </div>
-
-</div>
     
-<!-- Modal -->
-<div id="Ordermodal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-        <div class="bg-danger" id="Ordermodalheader">
-            <h4 class="modal-title text-center" style="color:white;" id="Ordermodalheadertext"></h4>
-        </div>
-        <div class="modal-body">        
-            <div class="row">
-                <h4 class="w-100 text-center">Bekräfta genom att klicka på "Avbryt order"</h4>
-                <hr>
-            </div>
-        </div>
-        <div class="modal-footer bg-white" id="Ordermodalfooter">
-            <button type="button" class="btn btn-danger mr-auto" id="CancelOrderbutton"><span><img src="img/warning.png" alt=""> Avbryt order</span></button>
-            <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
-        </div>
-    </div>
-
-  </div>
 </div>
 
-        <!-- /#page-wrapper -->
+<script src="js/forecast.js"></script>
 
-    <!-- /#wrapper -->
-    
+<script>
+$(document).ready(function() {
 
-    
-    <!-- Petainer Script -->
-    <script src="js/forecast.js"></script>
-    
-    <script>
-    $(document).ready(function() {
-        
-        keylist(GetKey());
-       
-    } );   
-  
-    </script>
+    keylist(GetKey());
 
+} );   
+
+</script>
 
 </html>
