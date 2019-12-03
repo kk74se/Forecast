@@ -18,11 +18,6 @@ $('#customerheader').html("Welcome</br> Please validate / update your forecast")
 moment.updateLocale('en', {
 });
 
-var Timer=function() {
-    var timerId = 0;  
-    timerId = setInterval(function() {listorders(); }, 20000);
-};
-
 var keylist = function(key) {
         
         var row="";
