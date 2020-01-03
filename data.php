@@ -47,7 +47,8 @@ catch(PDOException $e)
 $objQuery = $objConnect->prepare("SELECT b.Customer ,b.CustItemNo ,b.PetItemNo ,b.ItemName ,b.Year ,b.Period ,b.1 ,b.2 ,b.3 ,b.4 ,b.5 
         FROM petainer_fcast.Key a 
         JOIN petainer_fcast.ForecastData b on a.Customer = b.Customer and a.Year = b.Year and a.Period = b.Period 
-        where a.Key = '$key'");
+        where a.Key = '$key'"
+        . "order by b.PetItemNo");
 
 $objQuery->execute();
 

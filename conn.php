@@ -1,6 +1,6 @@
 <?php
-$FCADR="10.7.3.190";
-$FCUID="forecast";
+$FCADR="ns7.inleed.net";
+$FCUID="petainer_forecast";
 $FCPWD='?TetR4yNg*$g';
 $FCDB="petainer_fcast";
 
