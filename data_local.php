@@ -63,7 +63,7 @@ $objDB = mssql_select_db($REPORTDB);
   
 mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
 
-for ($year = 2019; $year <= 2025; $year++) {
+for ($year = 2020; $year <= 2025; $year++) {
     for ($period = 1; $period <= 12; $period++) {
         $strSQL = "INSERT INTO [dbo].[Key]
 		([Key]

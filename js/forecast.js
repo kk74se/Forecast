@@ -19,24 +19,30 @@ moment.updateLocale('en', {
 });
 
 var keylist = function(key) {
-        
+    
+    var dateStart=moment().date(1);
+    var dateNow=moment().format("D");
+    var dateEnd=moment().date(15);
+    var dateLeft=moment(moment(dateEnd).endOf('day')).calendar();
+    if(moment().isBetween(moment(dateStart).startOf('day'), moment(dateEnd).endOf('day'))){    
         var row="";
-        var tabledata=[]
-;        $.ajax({
+        var tabledata=[];
+        $.ajax({
             type: "GET",
             url: "http://localhost:8080/forecast/data.php?action=viewlist&key=" +key,
             cache: false,
             dataType: "json",
             success: function(data) {
-                               
+
                 for (i = 0; i <data.length; i++) {
-                    
+
                     row={"Customer": data[i].Customer, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo, "ItemName":data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>'};
-                    
+
                     tabledata.push(row);
                 }
-                
-                $('#customerheader').html("Welcome Customer: " +data[0].Customer + "</br> Please validate / update your forecast");
+
+                $('#customerheader').html("Welcome Customer: " +data[0].Customer + "</br>Active period will end " + dateLeft);
+
                 $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'One', title: moment(data[0].Period,"MM").format("YYYY MMMM")});
                 $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Two', title: moment(data[0].Period,"MM").add(1,"M").format("YYYY MMMM")});
                 $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Three', title: moment(data[0].Period,"MM").add(2,"M").format("YYYY MMMM")});
@@ -44,10 +50,12 @@ var keylist = function(key) {
                 $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Five', title: moment(data[0].Period,"MM").add(4,"M").format("YYYY MMMM")});
                 $('#itemtable').bootstrapTable('refreshOptions', {});
                 $('#itemtable').bootstrapTable("load", tabledata);
-                        
+
             }
         });
-  
+    }else{
+        $('#customerheader').html("The forecast adjustment period is not valid.</br>Please use the link sent to you between the dates specified.");
+    }
 };
 
 $("#updateforecastbutton").click(function () {
