@@ -41,7 +41,7 @@ var keylist = function(key) {
                     tabledata.push(row);
                 }
 
-                $('#customerheader').html("Welcome Customer: " +data[0].Customer + "</br>Active period will end " + dateLeft);
+                $('#customerheader').html("Welcome Customer: " +data[0].Customer + "</br>Active adjustment period will end " + dateLeft);
 
                 $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'One', title: moment(data[0].Period,"MM").format("YYYY MMMM")});
                 $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Two', title: moment(data[0].Period,"MM").add(1,"M").format("YYYY MMMM")});
