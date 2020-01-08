@@ -21,9 +21,9 @@ moment.updateLocale('en', {
 var keylist = function(key) {
     
     var dateStart=moment().date(1);
-    var dateNow=moment().format("D");
     var dateEnd=moment().date(15);
     var dateLeft=moment(moment(dateEnd).endOf('day')).calendar();
+    
     if(moment().isBetween(moment(dateStart).startOf('day'), moment(dateEnd).endOf('day'))){    
         var row="";
         var tabledata=[];
