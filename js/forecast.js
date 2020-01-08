@@ -19,7 +19,7 @@ moment.updateLocale('en', {
 });
 
 var keylist = function(key) {
-    
+
     var dateStart=moment().date(1);
     var dateEnd=moment().date(15);
     var dateLeft=moment(moment(dateEnd).endOf('day')).calendar();
@@ -34,23 +34,26 @@ var keylist = function(key) {
             dataType: "json",
             success: function(data) {
 
-                for (i = 0; i <data.length; i++) {
+                if(data.length>0){
 
-                    row={"Customer": data[i].Customer, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo, "ItemName":data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>'};
+                    for (i = 0; i <data.length; i++) {
 
-                    tabledata.push(row);
+                        row={"Customer": data[i].Customer, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo, "ItemName":data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>'};
+
+                        tabledata.push(row);
+                    }
+
+                    $('#customerheader').html("Welcome Customer: " +data[0].Customer + "</br>Active adjustment period will end " + dateLeft);
+
+                    $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'One', title: moment(data[0].Period,"MM").format("YYYY MMMM")});
+                    $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Two', title: moment(data[0].Period,"MM").add(1,"M").format("YYYY MMMM")});
+                    $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Three', title: moment(data[0].Period,"MM").add(2,"M").format("YYYY MMMM")});
+                    $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Four', title: moment(data[0].Period,"MM").add(3,"M").format("YYYY MMMM")});
+                    $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Five', title: moment(data[0].Period,"MM").add(4,"M").format("YYYY MMMM")});
+                    $('#itemtable').bootstrapTable('refreshOptions', {});
+                    $('#itemtable').bootstrapTable("load", tabledata);
+                    
                 }
-
-                $('#customerheader').html("Welcome Customer: " +data[0].Customer + "</br>Active adjustment period will end " + dateLeft);
-
-                $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'One', title: moment(data[0].Period,"MM").format("YYYY MMMM")});
-                $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Two', title: moment(data[0].Period,"MM").add(1,"M").format("YYYY MMMM")});
-                $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Three', title: moment(data[0].Period,"MM").add(2,"M").format("YYYY MMMM")});
-                $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Four', title: moment(data[0].Period,"MM").add(3,"M").format("YYYY MMMM")});
-                $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Five', title: moment(data[0].Period,"MM").add(4,"M").format("YYYY MMMM")});
-                $('#itemtable').bootstrapTable('refreshOptions', {});
-                $('#itemtable').bootstrapTable("load", tabledata);
-
             }
         });
     }else{

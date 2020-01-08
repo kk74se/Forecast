@@ -35,7 +35,9 @@
    vertical-align: top;
    margin-left: 7px;
    /* inline-block emulation for IE7*/
-   zoom: 1; 
+   /*zoom: 1;*/ 
+   transform:scale(1);
+   transform-origin: 0 0;
    *display: inline;
 }
 
@@ -51,7 +53,9 @@
     width: auto; /* bootstrap-responsive has width: 100% that breakes layout */
     white-space: normal; /* reset white-space decalred in parent*/
    /* display-inline emulation for IE7*/
-   zoom: 1; 
+   /*zoom: 1;*/ 
+   transform:scale(1);
+   transform-origin: 0 0;
    *display: inline;   
 }
 
@@ -169,7 +173,9 @@
     vertical-align: middle;
     width: auto;
     /* inline-block emulation for IE7*/
-    zoom: 1; 
+    /*zoom: 1;*/ 
+    transform:scale(1);
+    transform-origin: 0 0;
     *display: inline;    
 }
 
