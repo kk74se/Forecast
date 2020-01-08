@@ -13,7 +13,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
-$('#customerheader').html("Welcome</br> Please validate / update your forecast");
+$('#customerheader').html("Missing forecast </br>Please use the link provided to you");
 
 moment.updateLocale('en', {
 });
