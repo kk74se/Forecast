@@ -257,7 +257,6 @@ if (isset($_POST['five']) && !empty($_POST['five'])) {
 	exit();
 }
 
-
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
