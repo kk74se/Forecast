@@ -13,23 +13,18 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
-$('#customerheader').html("Missing forecast </br>Please use the link provided to you");
+$('#customerheader').html("Local forecast </br>");
 
 moment.updateLocale('en', {
 });
 
-var keylist = function(key) {
-
-    var dateStart=moment().date(1);
-    var dateEnd=moment().date(15);
-    var dateLeft=moment(moment(dateEnd).endOf('day')).calendar();
-    
-    if(moment().isBetween(moment(dateStart).startOf('day'), moment(dateEnd).endOf('day'))){    
+var viewlist = function(key) {
+   
         var row="";
         var tabledata=[];
         $.ajax({
             type: "GET",
-            url: "http://localhost:8080/forecast/data.php?action=viewlist&key=" +key,
+            url: "http://10.7.3.34/forecast/local_data.php?action=localviewlist",
             cache: false,
             dataType: "json",
             success: function(data) {
@@ -38,12 +33,10 @@ var keylist = function(key) {
 
                     for (i = 0; i <data.length; i++) {
 
-                        row={"Customer": data[i].Customer, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo, "ItemName":data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>'};
+                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>',"UpdateDBStatus":"0","UpdateM3Status":"0"};
 
                         tabledata.push(row);
                     }
-
-                    $('#customerheader').html("Welcome Customer: " +data[0].Customer + "</br>Active adjustment period will end: " + dateLeft);
 
                     $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'One', title: moment(data[0].Period,"MM").format("YYYY MMMM")});
                     $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Two', title: moment(data[0].Period,"MM").add(1,"M").format("YYYY MMMM")});
@@ -56,9 +49,6 @@ var keylist = function(key) {
                 }
             }
         });
-    }else{
-        $('#customerheader').html("The forecast adjustment period is not valid.</br>Please use the link sent to you between the dates specified.");
-    }
 };
 
 $("#updateforecastbutton").click(function () {

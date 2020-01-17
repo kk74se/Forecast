@@ -15,12 +15,14 @@
     <link href="css/forecast.css" rel="stylesheet">
     <link href="css/plugins/bootstrap-table.css" rel="stylesheet">
     <link href="css/plugins/bootstrap-editable.css" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table-filter-control.css" rel="stylesheet">
 
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.bundle.js"></script>  
     <script src="js/plugins/bootstrap-table.js"></script>   
     <script src="js/plugins/bootstrap-editable.js"></script>
     <script src="js/plugins/bootstrap-table-editable.js"></script>    
+    <script src="js/plugins/bootstrap-table-filter-control.js"></script> 
     <script src="js/plugins/moment-with-locales.min.js"></script>    
     <script src="https://kit.fontawesome.com/f99af2746e.js" crossorigin="anonymous"></script>
     
@@ -41,8 +43,8 @@
             <a class="item-text" id="updateheader"></a>
         </div> 
         <div class="col-md-2 padtop15">
-            <button type="button" style="width:100%; height:100%;" class="btn btn-success btn-block btn-lg" id="updateforecastbutton"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Update forecast</button>
-        </div> 
+            <button type="button" style="width:100%; height:100%;" class="btn btn-success btn-block btn-lg" id="updateM3datasetforecastbutton"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Update M3 Dataset</button>
+        </div>
     </div> 
     <hr>
     <ul class="nav nav-tabs">
@@ -53,20 +55,24 @@
         <div id="ForecastItems" class="tab-pane active">
             <div class="row">
                 <div class="col-12 padtop15">
-                    <table class="itemtabletext" data-toggle="table" id="itemtable">
+                    <table class="itemtabletext" data-toggle="table" data-filter-control="true" id="itemtable">
                         <thead>
                             <tr>
                                 <th data-field="CustItemNo" data-visible="false">Customer Item No</th>
-                                <th data-field="ItemNo">Item No</th>
-                                <th data-field="ItemName">Item Name</th>
+                                <th data-field="CustNo" data-filter-control="select">Customer No</th>
+                                <th data-field="CustName" data-filter-control="select">Customer</th>
+                                <th data-field="ItemNo" data-filter-control="select">Item</th>
+                                <th data-field="ItemName" data-visible="false">Item Name</th>
                                 <th data-field="Year" data-visible="false">Year</th>
                                 <th data-field="Period" data-visible="false">Period</th>
-                                <th data-field="One" data-editable="false">1</th>
+                                <th data-field="One" data-editable="true">1</th>
                                 <th data-field="Two" data-editable="true">2</th>
                                 <th data-field="Three" data-editable="true">3</th>
                                 <th data-field="Four" data-editable="true">4</th>
                                 <th data-field="Five" data-editable="true">5</th>
                                 <th data-field="Status">Status</th>
+                                <th data-field="UpdateDBStatus" data-visible="false">Status</th>
+                                <th data-field="UpdateM3Status" data-visible="false">Status</th>
                             </tr>
                         </thead>                               
                     </table> 
@@ -79,12 +85,12 @@
     </div>    
 </div>
 
-<script src="js/forecast.js"></script>
+<script src="js/FClocal.js"></script>
 
 <script>
 $(document).ready(function() {
 
-    keylist(GetKey());
+    viewlist();
 
 } );   
 </script>
