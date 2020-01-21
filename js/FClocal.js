@@ -33,7 +33,7 @@ var viewlist = function(key) {
 
                     for (i = 0; i <data.length; i++) {
 
-                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>',"UpdateDBStatus":"0","UpdateM3Status":"0"};
+                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>',"UpdateDBStatus":"0","UpdateM3Status":"0"};
 
                         tabledata.push(row);
                     }
@@ -51,28 +51,37 @@ var viewlist = function(key) {
         });
 };
 
-$("#updateforecastbutton").click(function () {
+$("#updateM3datasetforecastbutton").click(function () {
 
-    var $key=GetKey();
     var count=0;
     data=$('#itemtable').bootstrapTable('getData');
 
     for (i = 0; i < data.length; i++) {
 
         var listdata={
-            'Key': $key,
-            'Index': i,
-            'ItemNo': data[i].ItemNo,
-            'Year': data[i].Year,
-            'Period': data[i].Period,
-            'Two': data[i].Two,
-            'Three': data[i].Three,
-            'Four': data[i].Four,
-            'Five': data[i].Five
+            'customer': data[i].CustNo,
+            'item': data[i].ItemNo,
+            'year': data[i].Year,
+            'period': data[i].Period,
+            'oneY':  moment(data[0].Period,"MM").add(0,"M").format("YYYY"),
+            'oneP':  moment(data[0].Period,"MM").add(0,"M").format("M"),
+            'oneQ': data[i].One,
+            'twoY':  moment(data[0].Period,"MM").add(1,"M").format("YYYY"),
+            'twoP':  moment(data[0].Period,"MM").add(1,"M").format("M"),
+            'twoQ': data[i].Two,
+            'threeY':  moment(data[0].Period,"MM").add(2,"M").format("YYYY"),
+            'threeP':  moment(data[0].Period,"MM").add(2,"M").format("M"),
+            'threeQ': data[i].Three,
+            'fourY':  moment(data[0].Period,"MM").add(3,"M").format("YYYY"),
+            'fourP':  moment(data[0].Period,"MM").add(3,"M").format("M"),
+            'fourQ': data[i].Four,
+            'fiveY':  moment(data[0].Period,"MM").add(4,"M").format("YYYY"),
+            'fiveP':  moment(data[0].Period,"MM").add(4,"M").format("M"),
+            'fiveQ': data[i].Five
         };
 
        $.ajax({
-            url: "http://localhost:8080/forecast/data.php?action=updatelist",
+            url: "http://10.7.3.34/forecast/local_data.php?action=UpdateM3",
             type: "POST",
             data: listdata,
             dataType: "json",
@@ -86,11 +95,7 @@ $("#updateforecastbutton").click(function () {
                     });
                 }
                 console.log(count);
-                if(count==data.length){
-                    setTimeout(function() {
-                        keylist(GetKey());
-                    }, 4000);                   
-                }
+
             }
         });
         
