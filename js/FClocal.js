@@ -33,11 +33,11 @@ var viewlist = function(key) {
 
                     for (i = 0; i <data.length; i++) {
 
-                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>',"UpdateDBStatus":"0","UpdateM3Status":"0"};
+                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "TNR": data[i].TNR, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>',"UpdateDBStatus":"0","UpdateM3Status":data[i].TM3};
 
                         tabledata.push(row);
                     }
-
+                    $('#customerheader').html("Local forecast </br> Year: " + data[0].Year + " Period: " + data[0].Period);
                     $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'One', title: moment(data[0].Period,"MM").format("YYYY MMMM")});
                     $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Two', title: moment(data[0].Period,"MM").add(1,"M").format("YYYY MMMM")});
                     $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Three', title: moment(data[0].Period,"MM").add(2,"M").format("YYYY MMMM")});
@@ -104,6 +104,36 @@ $("#updateM3datasetforecastbutton").click(function () {
 });
 
 $('#itemtable').on('editable-save.bs.table', function (a,b,c, row) {
+    
+    var listdata={
+        'Index': i,
+        'ItemNo': data[i].ItemNo,
+        'Year': data[i].Year,
+        'Period': data[i].Period,
+        'Two': data[i].Two,
+        'Three': data[i].Three,
+        'Four': data[i].Four,
+        'Five': data[i].Five
+    };
+
+    $.ajax({
+        url: "https://forecast.petainer.se/data.php?action=updatelist",
+        type: "POST",
+        data: listdata,
+        dataType: "json",
+        success: function (reply) {
+            count++;
+            if(reply.Resultat=="1"){
+                $('#itemtable').bootstrapTable('updateCell', {
+                    index: reply.Index,
+                    field: 'Status',
+                    value: '<i class="fas fa-upload" style="color:green;"></i><a class="itemtabletext"> Update OK</a>'
+                });
+            }
+        }
+    });
+        
+    
     $('#itemtable').bootstrapTable('updateCell', {
         index: row,
         field: 'Status',
@@ -135,5 +165,20 @@ function GetKey(){
 
     }
     
+}
+
+function InM3Formatter (value, row, index) {
+    if(row.UpdateM3Status =="2"){
+        return [
+            '<i class="fas fa-exclamation"></i>'].join('');
+    }else if(row.UpdateM3Status == "1"){
+        return [
+            '<i class="fas fa-check"></i>'
+        ].join('');
+    }else {
+        return [
+            '' 
+        ].join('');
+    }
 }
 

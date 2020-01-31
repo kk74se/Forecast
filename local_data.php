@@ -37,6 +37,7 @@ $strSQL = "SELECT Customer
 	,[5]
 	,TNR
 	,TND
+        ,TM3
 FROM dbo.ForecastData
 where [Year]=year(getdate()) and [Period]=month(getdate())
 order by TNR desc, Customer"; 
@@ -60,6 +61,7 @@ while ( $row = mssql_fetch_assoc( $objQuery ) ) {
         $row_array['five'] = $row['5'];
         $row_array['TNR'] = $row['TNR'];
         $row_array['TND'] = $row['TND'];
+        $row_array['TM3'] = $row['TM3'];
     array_push($return_arr,$row_array);
 }
 
@@ -67,129 +69,6 @@ echo json_encode($return_arr);
   
 mssql_close($objConnect);  
   
-}
-
-if ($action == 'updatelist') { 
-
-$return_arr = array();
-//Get Key
-if (isset($_POST['Key'])) {
-    if (is_numeric(test_input($_POST['Key']))){
-        $Key=test_input($_POST['Key']);
-    }else{
-        $return_arr['Error'] = "nologin";
-        echo json_encode($return_arr);
-        exit();
-    }   
-} else {
-    $return_arr['Error'] = "nokey";
-    echo json_encode($return_arr);
-    exit();
-}
-
-if (isset($_POST['Index'])) {
-    if (is_numeric(test_input($_POST['Index']))){
-        $Index=test_input($_POST['Index']);
-    }else{
-        $return_arr['Error'] = "Index missing";
-        echo json_encode($return_arr);
-        exit();
-    }   
-} else {
-    $return_arr['Error'] = "nokey";
-    echo json_encode($return_arr);
-    exit();
-}
-
-if (isset($_POST['ItemNo'])) {
-	$ItemNo = test_input($_POST['ItemNo']);
-} else {
-	$return_arr['Error'] = "ItemNo missing";
-	echo json_encode($return_arr);
-	exit();
-}
-
-if (isset($_POST['Year'])) {
-	$Year = test_input($_POST['Year']);
-} else {
-	$return_arr['Error'] = "Year missing";
-	echo json_encode($return_arr);
-	exit();
-}
-
-if (isset($_POST['Period'])) {
-	$Period = test_input($_POST['Period']);
-} else {
-	$return_arr['Error'] = "Period missing";
-	echo json_encode($return_arr);
-	exit();
-}
-
-if (isset($_POST['Two'])) {
-	$Two = test_input($_POST['Two']);
-} else {
-	$return_arr['Error'] = "Two missing";
-	echo json_encode($return_arr);
-	exit();
-}
-
-if (isset($_POST['Three'])) {
-	$Three = test_input($_POST['Three']);
-} else {
-	$return_arr['Error'] = "Three missing";
-	echo json_encode($return_arr);
-	exit();
-}
-
-if (isset($_POST['Four'])) {
-	$Four = test_input($_POST['Four']);
-} else {
-	$return_arr['Error'] = "Four missing";
-	echo json_encode($return_arr);
-	exit();
-}
-
-if (isset($_POST['Five'])) {
-	$Five = test_input($_POST['Five']);
-} else {
-	$return_arr['Error'] = "Five missing";
-	echo json_encode($return_arr);
-	exit();
-}
-
-try {
-    $objConnect = new PDO("mysql:host=$FCADR;dbname=$FCDB;charset=UTF8", $FCUID, $FCPWD);
-    // set the PDO error mode to exception
-    $objConnect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    }
-catch(PDOException $e)
-    {
-    echo "Connection failed: " . $e->getMessage();
-    }
-
-$objQuery = $objConnect->prepare("update petainer_fcast.Key a
-    JOIN petainer_fcast.ForecastData b on a.Customer = b.Customer
-	and a.Year = b.Year
-	and a.Period = b.Period
-    set b.2 = '$Two'
-	,b.3 = '$Three'
-	,b.4 = '$Four'
-	,b.5 = '$Five'
-    where a.Key = '$Key'
-	and b.PetItemNo = '$ItemNo'"); 
-
-$objQuery->execute();
-
-$Resultat = $objQuery->rowCount();
-
-$return_arr['Resultat'] = $Resultat;
-$return_arr['Index'] = $Index;
-
-echo json_encode($return_arr);
-
-  
-$objConnect = null;
-
 }
 
 if ($action == 'UpdateM3') { 

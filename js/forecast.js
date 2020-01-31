@@ -29,7 +29,7 @@ var keylist = function(key) {
         var tabledata=[];
         $.ajax({
             type: "GET",
-            url: "http://localhost:8080/forecast/data.php?action=viewlist&key=" +key,
+            url: "https://forecast.petainer.se/data.php?action=viewlist&key=" +key,
             cache: false,
             dataType: "json",
             success: function(data) {
@@ -82,7 +82,7 @@ $("#updateforecastbutton").click(function () {
         };
 
        $.ajax({
-            url: "http://localhost:8080/forecast/data.php?action=updatelist",
+            url: "https://forecast.petainer.se/data.php?action=updatelist",
             type: "POST",
             data: listdata,
             dataType: "json",
