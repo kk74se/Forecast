@@ -22,6 +22,11 @@ var viewlist = function(key) {
    
         var row="";
         var tabledata=[];
+        var diff1="";
+        var diff2="";
+        var diff3="";
+        var diff4="";
+        
         $.ajax({
             type: "GET",
             url: "http://10.7.3.34/forecast/local_data.php?action=localviewlist",
@@ -32,8 +37,16 @@ var viewlist = function(key) {
                 if(data.length>0){
 
                     for (i = 0; i <data.length; i++) {
+                        
+                        if(data[i].DIFF1>0){
+                            diff1='<style="background-color:green;"> ';
+                        }else if(data[i].DIFF1<0){
+                            diff1='<style="background-color:red;"> ';
+                        }else {
+                            diff1='<style="bgcolor:red"> ';
+                        }
 
-                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "TNR": data[i].TNR, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>',"UpdateDBStatus":"0","UpdateM3Status":data[i].TM3};
+                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "DIFF1":data[i].DIFF1,"Two": data[i].two,"DIFF2":data[i].DIFF2, "Three": data[i].three,"DIFF3":data[i].DIFF3, "Four": data[i].four,"DIFF4":data[i].DIFF4, "Five": data[i].five, "TNR": data[i].TNR, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>',"UpdateDBStatus":"0","UpdateM3Status":data[i].TM3};
 
                         tabledata.push(row);
                     }
@@ -59,6 +72,7 @@ $("#updateM3datasetforecastbutton").click(function () {
     for (i = 0; i < data.length; i++) {
 
         var listdata={
+            'Index': i,
             'customer': data[i].CustNo,
             'item': data[i].ItemNo,
             'year': data[i].Year,
@@ -93,20 +107,29 @@ $("#updateM3datasetforecastbutton").click(function () {
                         field: 'Status',
                         value: '<i class="fas fa-upload" style="color:green;"></i><a class="itemtabletext"> Update OK</a>'
                     });
+                    $('#itemtable').bootstrapTable('updateCell', {
+                    index: reply.Index,
+                    field: 'UpdateM3Status',
+                    value: 1
+                });
                 }
-                console.log(count);
-
+                if(reply.Resultat=="2"){
+                    $('#itemtable').bootstrapTable('updateCell', {
+                    index: reply.Index,
+                    field: 'UpdateM3Status',
+                    value: '2'
+                });
+                }
             }
         });
         
     }
-    
+
 });
 
 $('#itemtable').on('editable-save.bs.table', function (a,b,c, row) {
     
     var listdata={
-        'Index': i,
         'ItemNo': data[i].ItemNo,
         'Year': data[i].Year,
         'Period': data[i].Period,
@@ -116,8 +139,10 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,c, row) {
         'Five': data[i].Five
     };
 
+    console.log("dklsfjsldfjsdlf");
+
     $.ajax({
-        url: "https://forecast.petainer.se/data.php?action=updatelist",
+        url: "https://foreca.petainer.se/data.php?action=updatelist",
         type: "POST",
         data: listdata,
         dataType: "json",
@@ -170,10 +195,10 @@ function GetKey(){
 function InM3Formatter (value, row, index) {
     if(row.UpdateM3Status =="2"){
         return [
-            '<i class="fas fa-exclamation"></i>'].join('');
+            '<i class="fas fa-exclamation" style="color:red;"></i>'].join('');
     }else if(row.UpdateM3Status == "1"){
         return [
-            '<i class="fas fa-check"></i>'
+            '<i class="fas fa-check" style="color:green;"></i>'
         ].join('');
     }else {
         return [
@@ -181,4 +206,91 @@ function InM3Formatter (value, row, index) {
         ].join('');
     }
 }
+  
+  function cellStyle1(value, row, index) {
+    if (row.DIFF1>0) {
+      return {
+        css: {
+          'background-color': 'LightGreen'
+        }
+      };
+    }else if (row.DIFF1<0) {
+      return {
+        css: {
+          'background-color': 'Tomato'
+        }
+      };
+    }else {
+      return {
+        css: {
+          'background-color': 'transparent'
+        }
+      };
+    }
+  }
 
+function cellStyle2(value, row, index) {
+    if (row.DIFF2>0) {
+      return {
+        css: {
+          'background-color': 'LightGreen'
+        }
+      };
+    }else if (row.DIFF2<0) {
+      return {
+        css: {
+          'background-color': 'Tomato'
+        }
+      };
+    }else {
+      return {
+        css: {
+          'background-color': 'transparent'
+        }
+      };
+    }
+  }
+  
+  function cellStyle3(value, row, index) {
+    if (row.DIFF3>0) {
+      return {
+        css: {
+          'background-color': 'LightGreen'
+        }
+      };
+    }else if (row.DIFF3<0) {
+      return {
+        css: {
+          'background-color': 'Tomato'
+        }
+      };
+    }else {
+      return {
+        css: {
+          'background-color': 'transparent'
+        }
+      };
+    }
+  }
+  
+  function cellStyle4(value, row, index) {
+    if (row.DIFF4>0) {
+      return {
+        css: {
+          'background-color': 'LightGreen'
+        }
+      };
+    }else if (row.DIFF4<0) {
+      return {
+        css: {
+          'background-color': 'Tomato'
+        }
+      };
+    }else {
+      return {
+        css: {
+          'background-color': 'transparent'
+        }
+      };
+    }
+  }

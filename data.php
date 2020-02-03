@@ -102,7 +102,7 @@ if (isset($_POST['Index'])) {
         exit();
     }   
 } else {
-    $return_arr['Error'] = "nokey";
+    $return_arr['Error'] = "no index";
     echo json_encode($return_arr);
     exit();
 }

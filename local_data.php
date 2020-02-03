@@ -24,22 +24,29 @@ $objDB = mssql_select_db($FCDB);
   
 mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
 
-$strSQL = "SELECT Customer
-	,CustItemNo
-	,PetItemNo
-	,ItemName
-	,[Year]
-	,[Period]
-	,[1]
-	,[2]
-	,[3]
-	,[4]
-	,[5]
-	,TNR
-	,TND
-        ,TM3
-FROM dbo.ForecastData
-where [Year]=year(getdate()) and [Period]=month(getdate())
+$strSQL = "SELECT a.Customer
+	,LTRIM(RTRIM(b.OKCUNM)) as 'CustomerName'
+	,a.CustItemNo
+	,a.PetItemNo
+	,a.ItemName
+	,a.[Year]
+	,a.[Period]
+	,a.[1]
+	,ISNULL(a.[1]-c.[2],0) as '1-Diff'
+	,a.[2]
+	,ISNULL(a.[2]-c.[3],0) as '2-Diff'
+	,a.[3]
+	,ISNULL(a.[3]-c.[4],0) as '3-Diff'
+	,a.[4]
+	,ISNULL(a.[4]-c.[5],0) as '4-Diff'
+	,a.[5]
+	,a.TNR
+	,a.TND
+    ,a.TM3
+FROM dbo.ForecastData a
+left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] b with(NOLOCK) on a.Customer = b.OKCUNO
+left join dbo.ForecastData c on a.Customer=c.Customer and a.PetItemNo=c.PetItemNo and c.Period = month(DATEADD(month, -1, GETDATE())) and c.Year = year(DATEADD(month, -1, GETDATE()))
+where a.[Year]=year(getdate()) and a.[Period]=month(getdate())
 order by TNR desc, Customer"; 
 
 $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]"); 
@@ -49,15 +56,20 @@ $result = $objQuery;
 
 while ( $row = mssql_fetch_assoc( $objQuery ) ) {
 	$row_array['Customer'] = $row['Customer']; 
+        $row_array['CustomerName'] = $row['CustomerName']; 
 	$row_array['CustItemNo'] = $row['CustItemNo']; 
 	$row_array['ItemNo'] = $row['PetItemNo']; 
   	$row_array['ItemName'] = $row['ItemName']; 
 	$row_array['Year'] = $row['Year']; 
 	$row_array['Period'] = $row['Period'];
-        $row_array['one'] = $row['1'];    
+        $row_array['one'] = $row['1'];   
+        $row_array['1-Diff'] = $row['1-Diff']; 
         $row_array['two'] = $row['2'];
+        $row_array['2-Diff'] = $row['2-Diff']; 
   	$row_array['three'] = $row['3'];    
+        $row_array['3-Diff'] = $row['3-Diff']; 
         $row_array['four'] = $row['4'];  
+        $row_array['4-Diff'] = $row['4-Diff']; 
         $row_array['five'] = $row['5'];
         $row_array['TNR'] = $row['TNR'];
         $row_array['TND'] = $row['TND'];
@@ -84,6 +96,20 @@ $url = 'https://selidm3tdh01.petainer.com:21108/m3api-rest/execute';
 // DEV	https://selidm3tdh01.petainer.com:22108/m3api-rest/execute
 // TST	https://selidm3tdh01.petainer.com:21108/m3api-rest/execute
 // PRD	https://selidm3ph01.petainer.com:20108/m3api-rest/execute
+
+if (isset($_POST['Index'])) {
+    if (is_numeric(test_input($_POST['Index']))){
+        $Index=test_input($_POST['Index']);
+    }else{
+        $return_arr['Error'] = "Index missing";
+        echo json_encode($return_arr);
+        exit();
+    }   
+} else {
+    $return_arr['Error'] = "no index";
+    echo json_encode($return_arr);
+    exit();
+}
 
 if (isset($_POST['year']) && !empty($_POST['year'])) {
 	$year = test_input($_POST['year']);
@@ -298,6 +324,7 @@ for ($x = 0; $x < 5; $x++) {
 
         while ( $row = mssql_fetch_assoc($objQuery)) {
             $return_arr['Resultat'] = $row['Resultat'];
+            $return_arr['Index'] = $Index;
         }
 
         echo json_encode($return_arr);
