@@ -339,6 +339,137 @@ for ($x = 0; $x < 5; $x++) {
         
 }
 
+if ($action == 'UpdateForecast') { 
+    
+if (isset($_POST['index'])) {
+    if (is_numeric(test_input($_POST['index']))){
+        $index=test_input($_POST['index']);
+    }else{
+        $return_arr['Error'] = "Index missing";
+        echo json_encode($return_arr);
+        exit();
+    }   
+} else {
+    $return_arr['Error'] = "no index";
+    echo json_encode($return_arr);
+    exit();
+}
+
+if (isset($_POST['year']) && !empty($_POST['year'])) {
+	$year = test_input($_POST['year']);
+} else {
+	$return_arr['Error'] = "Year måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['period']) && !empty($_POST['period'])) {
+	$period = test_input($_POST['period']);
+} else {
+	$return_arr['Error'] = "Period måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['customer']) && !empty($_POST['customer'])) {
+	$customer = test_input($_POST['customer']);
+} else {
+	$return_arr['Error'] = "Customer måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['item']) && !empty($_POST['item'])) {
+	$item = test_input($_POST['item']);
+} else {
+	$return_arr['Error'] = "Item måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['one'])) {
+	$one = test_input($_POST['one']);
+} else {
+	$return_arr['Error'] = "One måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['two'])) {
+	$two = test_input($_POST['two']);
+} else {
+	$return_arr['Error'] = "Two måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['three'])) {
+	$three = test_input($_POST['three']);
+} else {
+	$return_arr['Error'] = "Three måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['four'])) {
+	$four = test_input($_POST['four']);
+} else {
+	$return_arr['Error'] = "four måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['five'])) {
+	$five = test_input($_POST['five']);
+} else {
+	$return_arr['Error'] = "Five måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['tnr'])) {
+	$tnr = test_input($_POST['tnr']);
+} else {
+	$return_arr['Error'] = "TNR måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+           
+        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD); 
+        $objDB = mssql_select_db($FCDB);  
+
+        mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
+
+        $strSQL = "BEGIN TRANSACTION;
+                DECLARE @ID [int];
+                DECLARE @RE [Int]; 
+                UPDATE [dbo].[ForecastData]
+                SET [1] = '".$one."'
+                        ,[2] = '".$two."'
+                        ,[3] = '".$three."'
+                        ,[4] = '".$four."'
+                        ,[5] = '".$five."'
+                WHERE [Customer]='".$customer."' and [PetItemNo]='".$item."' and [Year]='".$year."' and [Period]='".$period."' and [TNR]='".$tnr."';
+                SELECT @RE = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;
+                select @RE as Resultat;
+                COMMIT;"; 
+
+        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]"); 
+
+        $result = $objQuery;
+        //$result = $objQuery->fetch(PDO::FETCH_ASSOC);
+
+        while ( $row = mssql_fetch_assoc($objQuery)) {
+            $return_arr['Resultat'] = $row['Resultat'];
+            $return_arr['Index'] = $index;
+        }
+
+        echo json_encode($return_arr);
+
+        mssql_close($objConnect); 
+        
+}
+
 
 function test_input($data) {
   $data = trim($data);

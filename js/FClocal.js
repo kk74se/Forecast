@@ -15,7 +15,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
 
 $('#customerheader').html("Local forecast </br>");
 
-moment.updateLocale('en', {
+moment.updateLocale('en-gb', {
 });
 
 var viewlist = function(key) {
@@ -26,6 +26,7 @@ var viewlist = function(key) {
         var diff2="";
         var diff3="";
         var diff4="";
+        var localTM3="";
         
         $.ajax({
             type: "GET",
@@ -45,8 +46,13 @@ var viewlist = function(key) {
                         }else {
                             diff1='<style="bgcolor:red"> ';
                         }
-
-                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "DIFF1":data[i].DIFF1,"Two": data[i].two,"DIFF2":data[i].DIFF2, "Three": data[i].three,"DIFF3":data[i].DIFF3, "Four": data[i].four,"DIFF4":data[i].DIFF4, "Five": data[i].five, "TNR": data[i].TNR, "Status":data[i].TM3,"UPDC":data[i].UPDC};
+                        
+                        if(data[i].TM3 !== null){
+                            LocalTM3='<i class="fas fa-arrow-right" style="color:green;"></i>M3: ' + data[i].TM3;
+                        }else{
+                            LocalTM3='';
+                        }
+                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "DIFF1":data[i].DIFF1,"Two": data[i].two,"DIFF2":data[i].DIFF2, "Three": data[i].three,"DIFF3":data[i].DIFF3, "Four": data[i].four,"DIFF4":data[i].DIFF4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC};
 
                         tabledata.push(row);
                     }
@@ -105,7 +111,7 @@ $("#updateM3datasetforecastbutton").click(function () {
                     $('#itemtable').bootstrapTable('updateCell', {
                     index: reply.Index,
                     field: 'Status',
-                    value: reply.Date
+                    value: '<i class="fas fa-arrow-right" style="color:green;"></i>M3 ' + reply.Date
                 });
                 }
             }
@@ -117,44 +123,48 @@ $("#updateM3datasetforecastbutton").click(function () {
 
 $('#itemtable').on('editable-save.bs.table', function (a,b,data, row) {
     
-return;  
+    var PrevStatus="";
     
     var listdata={
-        'ItemNo': data.ItemNo,
-        'Year': data.Year,
-        'Period': data.Period,
-        'One': data.One,
-        'Two': data.Two,
-        'Three': data.Three,
-        'Four': data.Four,
-        'Five': data.Five,
-        'TNR': data.TNR
+        'index': row,
+        'customer': data.CustNo,
+        'item': data.ItemNo,
+        'year': data.Year,
+        'period': data.Period,
+        'one': data.One,
+        'two': data.Two,
+        'three': data.Three,
+        'four': data.Four,
+        'five': data.Five,
+        'tnr': data.TNR
     };
 
     $.ajax({
-        url: "https://foreca.petainer.se/data.php?action=updatelist",
+        url: "http://10.7.3.34/forecast/local_data.php?action=UpdateForecast",
         type: "POST",
         data: listdata,
         dataType: "json",
         success: function (reply) {
-            count++;
-            if(reply.Resultat=="1"){
+            
+            PrevStatus=data.Status;
+            
+            $('#itemtable').bootstrapTable('updateCell', {
+                    index: reply.Index,
+                    field: 'Status',
+                    value: 'Update OK'
+                });
+            
+            setTimeout(function() {
                 $('#itemtable').bootstrapTable('updateCell', {
                     index: reply.Index,
                     field: 'Status',
-                    value: '<i class="fas fa-upload" style="color:green;"></i><a class="itemtabletext"> Update OK</a>'
+                    value: PrevStatus
                 });
-            }
+            }, 3000); 
+            
         }
     });
         
-    
-    $('#itemtable').bootstrapTable('updateCell', {
-        index: row,
-        field: 'Status',
-        value: '<i class="fas fa-info" style="color:red;"></i><a class="itemtabletext"> Update Required</a>'
-    });
-  console.log(row);
 });
 
 function GetKey(){

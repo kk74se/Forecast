@@ -15,13 +15,13 @@ var getUrlParameter = function getUrlParameter(sParam) {
 
 $('#customerheader').html("Missing forecast </br>Please use the link provided to you");
 
-moment.updateLocale('en', {
+moment.updateLocale('en-gb', {
 });
 
 var keylist = function(key) {
 
     var dateStart=moment().date(1);
-    var dateEnd=moment().date(10);
+    var dateEnd=moment().date(15);
     var dateLeft=moment(moment(dateEnd).endOf('day')).calendar();
     
     if(moment().isBetween(moment(dateStart).startOf('day'), moment(dateEnd).endOf('day'))){    
