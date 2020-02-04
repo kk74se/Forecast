@@ -21,7 +21,7 @@ moment.updateLocale('en', {
 var keylist = function(key) {
 
     var dateStart=moment().date(1);
-    var dateEnd=moment().date(15);
+    var dateEnd=moment().date(10);
     var dateLeft=moment(moment(dateEnd).endOf('day')).calendar();
     
     if(moment().isBetween(moment(dateStart).startOf('day'), moment(dateEnd).endOf('day'))){    
@@ -68,41 +68,45 @@ $("#updateforecastbutton").click(function () {
     data=$('#itemtable').bootstrapTable('getData');
 
     for (i = 0; i < data.length; i++) {
+        
+        if(data[i].Status.slice(-9)=="Required"){           
+        
+            var listdata={
+                'Key': $key,
+                'Index': i,
+                'ItemNo': data[i].ItemNo,
+                'Year': data[i].Year,
+                'Period': data[i].Period,
+                'Two': data[i].Two,
+                'Three': data[i].Three,
+                'Four': data[i].Four,
+                'Five': data[i].Five
+            };
 
-        var listdata={
-            'Key': $key,
-            'Index': i,
-            'ItemNo': data[i].ItemNo,
-            'Year': data[i].Year,
-            'Period': data[i].Period,
-            'Two': data[i].Two,
-            'Three': data[i].Three,
-            'Four': data[i].Four,
-            'Five': data[i].Five
-        };
-
-       $.ajax({
-            url: "https://forecast.petainer.se/data.php?action=updatelist",
-            type: "POST",
-            data: listdata,
-            dataType: "json",
-            success: function (reply) {
-                count++;
-                if(reply.Resultat=="1"){
-                    $('#itemtable').bootstrapTable('updateCell', {
-                        index: reply.Index,
-                        field: 'Status',
-                        value: '<i class="fas fa-upload" style="color:green;"></i><a class="itemtabletext"> Update OK</a>'
-                    });
+           $.ajax({
+                url: "https://forecast.petainer.se/data.php?action=updatelist",
+                type: "POST",
+                data: listdata,
+                dataType: "json",
+                success: function (reply) {
+                    count++;
+                    if(reply.Resultat=="1"){
+                        $('#itemtable').bootstrapTable('updateCell', {
+                            index: reply.Index,
+                            field: 'Status',
+                            value: '<i class="fas fa-upload" style="color:green;"></i><a class="itemtabletext"> Update OK</a>'
+                        });
+                    }
+                    console.log(count);
+                    if(count==data.length){
+                        setTimeout(function() {
+                            keylist(GetKey());
+                        }, 4000);                   
+                    }
                 }
-                console.log(count);
-                if(count==data.length){
-                    setTimeout(function() {
-                        keylist(GetKey());
-                    }, 4000);                   
-                }
-            }
-        });
+            });
+        
+        }
         
     }
     

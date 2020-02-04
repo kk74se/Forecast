@@ -127,19 +127,20 @@ $("#updateM3datasetforecastbutton").click(function () {
 
 });
 
-$('#itemtable').on('editable-save.bs.table', function (a,b,c, row) {
+$('#itemtable').on('editable-save.bs.table', function (a,b,data, row) {
+    
     
     var listdata={
-        'ItemNo': data[i].ItemNo,
-        'Year': data[i].Year,
-        'Period': data[i].Period,
-        'Two': data[i].Two,
-        'Three': data[i].Three,
-        'Four': data[i].Four,
-        'Five': data[i].Five
+        'ItemNo': data.ItemNo,
+        'Year': data.Year,
+        'Period': data.Period,
+        'One': data.One,
+        'Two': data.Two,
+        'Three': data.Three,
+        'Four': data.Four,
+        'Five': data.Five,
+        'TNR': data.TNR
     };
-
-    console.log("dklsfjsldfjsdlf");
 
     $.ajax({
         url: "https://foreca.petainer.se/data.php?action=updatelist",
