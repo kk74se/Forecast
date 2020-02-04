@@ -42,7 +42,8 @@ $strSQL = "SELECT a.Customer
 	,a.[5]
 	,a.TNR
 	,a.TND
-    ,a.TM3
+        ,a.TM3
+        ,a.UPDC
 FROM dbo.ForecastData a
 left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] b with(NOLOCK) on a.Customer = b.OKCUNO
 left join dbo.ForecastData c on a.Customer=c.Customer and a.PetItemNo=c.PetItemNo and c.Period = month(DATEADD(month, -1, GETDATE())) and c.Year = year(DATEADD(month, -1, GETDATE()))
@@ -63,17 +64,18 @@ while ( $row = mssql_fetch_assoc( $objQuery ) ) {
 	$row_array['Year'] = $row['Year']; 
 	$row_array['Period'] = $row['Period'];
         $row_array['one'] = $row['1'];   
-        $row_array['1-Diff'] = $row['1-Diff']; 
+        $row_array['DIFF1'] = $row['1-Diff']; 
         $row_array['two'] = $row['2'];
-        $row_array['2-Diff'] = $row['2-Diff']; 
+        $row_array['DIFF2'] = $row['2-Diff']; 
   	$row_array['three'] = $row['3'];    
-        $row_array['3-Diff'] = $row['3-Diff']; 
+        $row_array['DIFF3'] = $row['3-Diff']; 
         $row_array['four'] = $row['4'];  
-        $row_array['4-Diff'] = $row['4-Diff']; 
+        $row_array['DIFF4'] = $row['4-Diff']; 
         $row_array['five'] = $row['5'];
         $row_array['TNR'] = $row['TNR'];
         $row_array['TND'] = $row['TND'];
         $row_array['TM3'] = $row['TM3'];
+        $row_array['UPDC'] = $row['UPDC'];
     array_push($return_arr,$row_array);
 }
 
@@ -310,11 +312,14 @@ for ($x = 0; $x < 5; $x++) {
         $strSQL = "BEGIN TRANSACTION;
                     DECLARE @ID [int];
                     DECLARE @RE [Int]; 
+                    DECLARE @DT [date];
+                    set @DT=(select FORMAT (getdate(), 'yyyy-MM-dd'));
                     update [dbo].[ForecastData] 
-                    set [TM3]=".$M3Status.
-                    "where [Customer]='".$customer."' and [PetItemNo]='".$item."' and [Year]='".$year."' and [Period]='".$period."';
+                    set [TM3]=@DT
+                    where [Customer]='".$customer."' and [PetItemNo]='".$item."' and [Year]='".$year."' and [Period]='".$period."';
                     SELECT @RE = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;
                     select @RE as Resultat;
+                    select @DT as UpdateDate;
                     COMMIT;"; 
 
         $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]"); 
@@ -325,6 +330,7 @@ for ($x = 0; $x < 5; $x++) {
         while ( $row = mssql_fetch_assoc($objQuery)) {
             $return_arr['Resultat'] = $row['Resultat'];
             $return_arr['Index'] = $Index;
+            $return_arr['Date'] = $row['Updatedate'];
         }
 
         echo json_encode($return_arr);

@@ -46,7 +46,7 @@ var viewlist = function(key) {
                             diff1='<style="bgcolor:red"> ';
                         }
 
-                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "DIFF1":data[i].DIFF1,"Two": data[i].two,"DIFF2":data[i].DIFF2, "Three": data[i].three,"DIFF3":data[i].DIFF3, "Four": data[i].four,"DIFF4":data[i].DIFF4, "Five": data[i].five, "TNR": data[i].TNR, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>',"UpdateDBStatus":"0","UpdateM3Status":data[i].TM3};
+                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "DIFF1":data[i].DIFF1,"Two": data[i].two,"DIFF2":data[i].DIFF2, "Three": data[i].three,"DIFF3":data[i].DIFF3, "Four": data[i].four,"DIFF4":data[i].DIFF4, "Five": data[i].five, "TNR": data[i].TNR, "Status":data[i].TM3,"UPDC":data[i].UPDC};
 
                         tabledata.push(row);
                     }
@@ -103,21 +103,9 @@ $("#updateM3datasetforecastbutton").click(function () {
                 count++;
                 if(reply.Resultat=="1"){
                     $('#itemtable').bootstrapTable('updateCell', {
-                        index: reply.Index,
-                        field: 'Status',
-                        value: '<i class="fas fa-upload" style="color:green;"></i><a class="itemtabletext"> Update OK</a>'
-                    });
-                    $('#itemtable').bootstrapTable('updateCell', {
                     index: reply.Index,
-                    field: 'UpdateM3Status',
-                    value: 1
-                });
-                }
-                if(reply.Resultat=="2"){
-                    $('#itemtable').bootstrapTable('updateCell', {
-                    index: reply.Index,
-                    field: 'UpdateM3Status',
-                    value: '2'
+                    field: 'Status',
+                    value: reply.Date
                 });
                 }
             }
@@ -129,6 +117,7 @@ $("#updateM3datasetforecastbutton").click(function () {
 
 $('#itemtable').on('editable-save.bs.table', function (a,b,data, row) {
     
+return;  
     
     var listdata={
         'ItemNo': data.ItemNo,
@@ -168,15 +157,6 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,data, row) {
   console.log(row);
 });
 
-function TableActions (value, row, index) {
-
-    return [
-        '<button type="button" class="btn btn-danger btn-block" data-unique-id="',row.Order,'">',
-        '<span style="color:white;">Avbryt</span>',
-        '</button>'
-    ].join('');
-}
-
 function GetKey(){
     if (location.search.indexOf('key=')>=0){
         var key = getUrlParameter('key');  
@@ -201,6 +181,18 @@ function InM3Formatter (value, row, index) {
         return [
             '<i class="fas fa-check" style="color:green;"></i>'
         ].join('');
+    }else {
+        return [
+            '' 
+        ].join('');
+    }
+}
+
+function UPDCFormatter (value, row, index) {
+    if(row.UPDC =="1"){
+        return ['OK'].join('');
+    }else if(row.UpdateM3Status == "0"){
+        return ['-'].join('');
     }else {
         return [
             '' 

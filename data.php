@@ -181,7 +181,7 @@ $objQuery = $objConnect->prepare("update petainer_fcast.Key a
 	,b.3 = '$Three'
 	,b.4 = '$Four'
 	,b.5 = '$Five'
-        .b.UPDC = 1
+        ,b.UPDC = 1
     where a.Key = '$Key'
 	and b.PetItemNo = '$ItemNo'"); 
 

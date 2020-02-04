@@ -68,8 +68,8 @@ $("#updateforecastbutton").click(function () {
     data=$('#itemtable').bootstrapTable('getData');
 
     for (i = 0; i < data.length; i++) {
-        
-        if(data[i].Status.slice(-9)=="Required"){           
+        console.log(data[i].Status.slice(-12,-4));
+        if(data[i].Status.slice(-12,-4)=="Required"){           
         
             var listdata={
                 'Key': $key,
@@ -89,27 +89,24 @@ $("#updateforecastbutton").click(function () {
                 data: listdata,
                 dataType: "json",
                 success: function (reply) {
-                    count++;
                     if(reply.Resultat=="1"){
                         $('#itemtable').bootstrapTable('updateCell', {
                             index: reply.Index,
                             field: 'Status',
                             value: '<i class="fas fa-upload" style="color:green;"></i><a class="itemtabletext"> Update OK</a>'
                         });
-                    }
-                    console.log(count);
-                    if(count==data.length){
-                        setTimeout(function() {
-                            keylist(GetKey());
-                        }, 4000);                   
-                    }
+                    }                   
                 }
             });
         
         }
         
     }
-    
+ 
+    setTimeout(function() {
+        keylist(GetKey());
+    }, 3000);                   
+      
 });
 
 $('#itemtable').on('editable-save.bs.table', function (a,b,c, row) {
@@ -120,15 +117,6 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,c, row) {
     });
   console.log(row);
 });
-
-function TableActions (value, row, index) {
-
-    return [
-        '<button type="button" class="btn btn-danger btn-block" data-unique-id="',row.Order,'">',
-        '<span style="color:white;">Avbryt</span>',
-        '</button>'
-    ].join('');
-}
 
 function GetKey(){
     if (location.search.indexOf('key=')>=0){
