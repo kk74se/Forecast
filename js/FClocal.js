@@ -151,7 +151,7 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,data, row) {
             $('#itemtable').bootstrapTable('updateCell', {
                     index: reply.Index,
                     field: 'Status',
-                    value: 'Update OK'
+                    value: 'FC Update OK'
                 });
             
             setTimeout(function() {
