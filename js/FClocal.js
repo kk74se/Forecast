@@ -85,7 +85,7 @@ var viewrecipients = function(key) {
                         
                         if(data[i].CustomerM3 !== null && data[i].CustomerFC !== null){
                             customer=data[i].CustomerFC;
-                            status=0;
+                            status=1;
                         }
                         else if(data[i].CustomerM3 !== null){
                             customer=data[i].CustomerM3;
@@ -367,19 +367,18 @@ function cellStyle2(value, row, index) {
     }
   }
   
-  function rowStyle(row, index) {
-      if(row.Status==1){
-            return {
-                css: {
-                  'background-color': '#ff9999'
-                }
-            };
-      }else{
-          return {
-        css: {
-            'background-color': 'transparent'
-            } 
-        };
-      }
-    
-  }
+  function TableActions (value, row, index) {
+    if(row.Status>0){
+            return [
+        '<button type="button" class="btn btn-danger btn-block" data-unique-id="',row.Order,'">',
+        '<span style="color:white;">Delete</span>',
+        '</button>'
+    ].join(''); 
+}}
+
+
+$(document).on('click',".btn", function(){
+    $('#Ordermodalheader').attr('data-order-id',$(this).attr('data-unique-id'));
+    $('#Ordermodalheadertext').html("Order nr: " + $(this).attr('data-unique-id'));
+    $('#Ordermodal').modal('show'); 
+    });
