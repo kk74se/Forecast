@@ -372,15 +372,39 @@ function cellStyle2(value, row, index) {
   function TableActions (value, row, index) {
     if(row.Status>0){
             return [
-        '<button type="button" class="btn btn-danger btn-block" data-unique-id="',row.Order,'">',
+        '<button type="button" class="btn btn-danger btn-block" data-unique-id="',row.Customer,'">',
         '<span style="color:white;">Delete</span>',
         '</button>'
     ].join(''); 
 }}
 
 
-$(document).on('click',".btn", function(){
-    $('#Ordermodalheader').attr('data-order-id',$(this).attr('data-unique-id'));
-    $('#Ordermodalheadertext').html("Order nr: " + $(this).attr('data-unique-id'));
-    $('#Ordermodal').modal('show'); 
+$('#recipientstable').on('click',".btn", function(){
+    $('#Recipientsmodalheader').attr('data-customer-id',$(this).attr('data-unique-id'));
+    $('#Recipientsmodalheadertext').html("Recipients for Customer: " + $(this).attr('data-unique-id'));
+    $('#Recipientsmodal').modal('show'); 
     });
+    
+$('#DeleteRecipientsButton').click(function(){
+    
+    var deleterecipient=$('#Recipientsmodalheader').attr('data-customer-id');
+    
+    if(deleterecipient!=''){        
+        var listdata={
+        'customer': deleterecipient
+    };
+
+    $.ajax({
+        url: "http://10.7.3.34/forecast/local_data.php?action=DeleteRecipients",
+        type: "POST",
+        data: listdata,
+        dataType: "json",
+        success: function (reply) {
+            
+            $('#Recipientsmodal').modal('hide');
+            viewrecipients();
+            
+        }
+    });   
+    }
+});
