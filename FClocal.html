@@ -49,7 +49,7 @@
     <hr>
     <ul class="nav nav-tabs">
         <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#ForecastItems">Forecast</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Help">Help</a></li> 
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Recipients">Recipients</a></li> 
     </ul>
     <div class="tab-content">
         <div id="ForecastItems" class="tab-pane active">
@@ -59,32 +59,48 @@
                         <thead>
                             <tr>
                                 <th data-field="CustItemNo" data-visible="false">Customer Item No</th>
+                                <th data-field="UPDC" data-visible="true" data-formatter="UPDCFormatter" data-filter-control="select">CU</th>
                                 <th data-field="CustNo" data-filter-control="select">Customer No</th>
                                 <th data-field="CustName" data-filter-control="select">Customer</th>
                                 <th data-field="ItemNo" data-visible="false">Item No</th>
                                 <th data-field="ItemName">Item</th>
                                 <th data-field="Year" data-visible="false">Year</th>
-                                <th data-field="Period" data-visible="false">Period</th>
-                                <th data-field="UPDC" data-visible="true" data-formatter="UPDCFormatter" data-filter-control="select">CU</th>
+                                <th data-field="Period" data-visible="false">Period</th>                              
+                                <th data-field="UpdateStatus"><i class="fas fa-arrow-right" style="color:green;"></i> FC</th>
                                 <th data-field="One" data-editable="true" data-cell-style="cellStyle1">1</th>
-                                <th data-field="DIFF1" data-visible="false">DIFF1</th>
+                                <th data-field="PREV1" data-visible="false">PREV1</th>
                                 <th data-field="Two" data-editable="true" data-cell-style="cellStyle2">2</th>
-                                <th data-field="DIFF2" data-visible="false">DIFF2</th>
+                                <th data-field="PREV2" data-visible="false">PREV2</th>
                                 <th data-field="Three" data-editable="true" data-cell-style="cellStyle3">3</th>
-                                <th data-field="DIFF3" data-visible="false">DIFF3</th>
+                                <th data-field="PREV3" data-visible="false">PREV3</th>
                                 <th data-field="Four" data-editable="true" data-cell-style="cellStyle4">4</th>
-                                <th data-field="DIFF4" data-visible="false">DIFF4</th>
+                                <th data-field="PREV4" data-visible="false">PREV4</th>
                                 <th data-field="Five" data-editable="true">5</th>
                                 <th data-field="TNR" data-editable="false" data-visible="false">TNR</th>
-                                <th data-field="Status">Status</th>
+                                <th data-field="Status">FC <i class="fas fa-arrow-right" style="color:green;"></i> M3</th>
+                                
                             </tr>
                         </thead>                               
                     </table> 
                 </div>
             </div>
         </div>
-        <div id="Help" class="tab-pane fade">
-            
+        <div id="Recipients" class="tab-pane fade">
+            <div class="row">
+                <div class="col-12 padtop15">
+                    <table class="itemtabletext" data-toggle="table" data-row-style="rowStyle" id="recipientstable">
+                        <thead>
+                            <tr>
+                                <th data-field="Customer" data-visible="true">Customer</th>
+                                <th data-field="CustomerName" data-visible="true">Customer Name</th>
+                                <th data-field="Status" data-visible="false">Status</th>
+                                <th data-field="TOemail" data-editable="true" data-visible="true">TO Email</th>
+                                <th data-field="CCemail" data-editable="true" data-visible="true">CC Email</th>
+                            </tr>
+                        </thead>                               
+                    </table> 
+                </div>
+            </div>
         </div>
     </div>    
 </div>
@@ -95,7 +111,8 @@
 $(document).ready(function() {
 
     viewlist();
-
+    viewrecipients();
+    
 } );   
 </script>
 

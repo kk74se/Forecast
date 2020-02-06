@@ -19,9 +19,9 @@ if ($action == 'localviewlist') {
 
 //$objConnect = new PDO("mysql:host=$FCADR;dbname=$FCDB", $FCUID, $FCPWD);
 
-$objConnect = mssql_connect($FCADR,$FCUID,$FCPWD); 
-$objDB = mssql_select_db($FCDB);  
-  
+$objConnect = mssql_connect($FCADR,$FCUID,$FCPWD);
+$objDB = mssql_select_db($FCDB);
+
 mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
 
 $strSQL = "SELECT a.Customer
@@ -32,13 +32,13 @@ $strSQL = "SELECT a.Customer
 	,a.[Year]
 	,a.[Period]
 	,a.[1]
-	,ISNULL(a.[1]-c.[2],0) as '1-Diff'
+	,ISNULL(c.[2],0) as '1-Prev'
 	,a.[2]
-	,ISNULL(a.[2]-c.[3],0) as '2-Diff'
+	,ISNULL(c.[3],0) as '2-Prev'
 	,a.[3]
-	,ISNULL(a.[3]-c.[4],0) as '3-Diff'
+	,ISNULL(c.[4],0) as '3-Prev'
 	,a.[4]
-	,ISNULL(a.[4]-c.[5],0) as '4-Diff'
+	,ISNULL(c.[5],0) as '4-Prev'
 	,a.[5]
 	,a.TNR
 	,a.TND
@@ -48,29 +48,29 @@ FROM dbo.ForecastData a
 left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] b with(NOLOCK) on a.Customer = b.OKCUNO
 left join dbo.ForecastData c on a.Customer=c.Customer and a.PetItemNo=c.PetItemNo and c.Period = month(DATEADD(month, -1, GETDATE())) and c.Year = year(DATEADD(month, -1, GETDATE()))
 where a.[Year]=year(getdate()) and a.[Period]=month(getdate())
-order by TNR desc, Customer"; 
+order by TNR desc, Customer";
 
-$objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]"); 
+$objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
 
 $result = $objQuery;
 //$result = $objQuery->fetch(PDO::FETCH_ASSOC);
 
 while ( $row = mssql_fetch_assoc( $objQuery ) ) {
-	$row_array['Customer'] = $row['Customer']; 
-        $row_array['CustomerName'] = $row['CustomerName']; 
-	$row_array['CustItemNo'] = $row['CustItemNo']; 
-	$row_array['ItemNo'] = $row['PetItemNo']; 
-  	$row_array['ItemName'] = $row['ItemName']; 
-	$row_array['Year'] = $row['Year']; 
+	$row_array['Customer'] = $row['Customer'];
+        $row_array['CustomerName'] = $row['CustomerName'];
+	$row_array['CustItemNo'] = $row['CustItemNo'];
+	$row_array['ItemNo'] = $row['PetItemNo'];
+  	$row_array['ItemName'] = $row['ItemName'];
+	$row_array['Year'] = $row['Year'];
 	$row_array['Period'] = $row['Period'];
-        $row_array['one'] = $row['1'];   
-        $row_array['DIFF1'] = $row['1-Diff']; 
+        $row_array['one'] = $row['1'];
+        $row_array['PREV1'] = $row['1-Prev'];
         $row_array['two'] = $row['2'];
-        $row_array['DIFF2'] = $row['2-Diff']; 
-  	$row_array['three'] = $row['3'];    
-        $row_array['DIFF3'] = $row['3-Diff']; 
-        $row_array['four'] = $row['4'];  
-        $row_array['DIFF4'] = $row['4-Diff']; 
+        $row_array['PREV2'] = $row['2-Prev'];
+  	$row_array['three'] = $row['3'];
+        $row_array['PREV3'] = $row['3-Prev'];
+        $row_array['four'] = $row['4'];
+        $row_array['PREV4'] = $row['4-Prev'];
         $row_array['five'] = $row['5'];
         $row_array['TNR'] = $row['TNR'];
         $row_array['TND'] = $row['TND'];
@@ -80,13 +80,13 @@ while ( $row = mssql_fetch_assoc( $objQuery ) ) {
 }
 
 echo json_encode($return_arr);
-  
-mssql_close($objConnect);  
-  
+
+mssql_close($objConnect);
+
 }
 
-if ($action == 'UpdateM3') { 
-    
+if ($action == 'UpdateM3') {
+
 $divi = 'SE1';
 $file = 'O001002';
 $dataset = 'SE1F'; //SBDS
@@ -106,7 +106,7 @@ if (isset($_POST['Index'])) {
         $return_arr['Error'] = "Index missing";
         echo json_encode($return_arr);
         exit();
-    }   
+    }
 } else {
     $return_arr['Error'] = "no index";
     echo json_encode($return_arr);
@@ -262,9 +262,9 @@ $Quantity = array($oneQ, $twoQ, $threeQ, $fourQ, $fiveQ);
 $x=0;
 $resultM3=1;
 for ($x = 0; $x < 5; $x++) {
-   
+
     $curl = curl_init();
-    
+
         curl_setopt_array($curl, array(
           CURLOPT_URL => $url ."/OSS401MI/SndBudgets?CONO=001&DIVI=".$divi."&SBDS=".$dataset."&FILE=".$file."&BVER=".$version."&SSTT=".$type."&OSLE=".$oslevel."&YEA4=".$Years[$x]."&PERI=".$Periods[$x]."&KEY1=".$divi."&KEY2=".$customer."&KEY3=".$item."&CL01=".$Quantity[$x],
           CURLOPT_RETURNTRANSFER => true,
@@ -303,26 +303,26 @@ for ($x = 0; $x < 5; $x++) {
         }else{
             $M3Status=2;
         }
-                   
-        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD); 
-        $objDB = mssql_select_db($FCDB);  
+
+        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD);
+        $objDB = mssql_select_db($FCDB);
 
         mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
 
         $strSQL = "BEGIN TRANSACTION;
                     DECLARE @ID [int];
-                    DECLARE @RE [Int]; 
+                    DECLARE @RE [Int];
                     DECLARE @DT [date];
                     set @DT=(select FORMAT (getdate(), 'yyyy-MM-dd'));
-                    update [dbo].[ForecastData] 
+                    update [dbo].[ForecastData]
                     set [TM3]=@DT
                     where [Customer]='".$customer."' and [PetItemNo]='".$item."' and [Year]='".$year."' and [Period]='".$period."';
                     SELECT @RE = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;
                     select @RE as Resultat;
                     select @DT as UpdateDate;
-                    COMMIT;"; 
+                    COMMIT;";
 
-        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]"); 
+        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
 
         $result = $objQuery;
         //$result = $objQuery->fetch(PDO::FETCH_ASSOC);
@@ -335,12 +335,12 @@ for ($x = 0; $x < 5; $x++) {
 
         echo json_encode($return_arr);
 
-        mssql_close($objConnect); 
-        
+        mssql_close($objConnect);
+
 }
 
-if ($action == 'UpdateForecast') { 
-    
+if ($action == 'UpdateForecast') {
+
 if (isset($_POST['index'])) {
     if (is_numeric(test_input($_POST['index']))){
         $index=test_input($_POST['index']);
@@ -348,7 +348,7 @@ if (isset($_POST['index'])) {
         $return_arr['Error'] = "Index missing";
         echo json_encode($return_arr);
         exit();
-    }   
+    }
 } else {
     $return_arr['Error'] = "no index";
     echo json_encode($return_arr);
@@ -434,15 +434,15 @@ if (isset($_POST['tnr'])) {
 	echo json_encode($return_arr);
 	exit();
 }
-           
-        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD); 
-        $objDB = mssql_select_db($FCDB);  
+
+        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD);
+        $objDB = mssql_select_db($FCDB);
 
         mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
 
         $strSQL = "BEGIN TRANSACTION;
                 DECLARE @ID [int];
-                DECLARE @RE [Int]; 
+                DECLARE @RE [Int];
                 UPDATE [dbo].[ForecastData]
                 SET [1] = '".$one."'
                         ,[2] = '".$two."'
@@ -452,9 +452,9 @@ if (isset($_POST['tnr'])) {
                 WHERE [Customer]='".$customer."' and [PetItemNo]='".$item."' and [Year]='".$year."' and [Period]='".$period."' and [TNR]='".$tnr."';
                 SELECT @RE = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;
                 select @RE as Resultat;
-                COMMIT;"; 
+                COMMIT;";
 
-        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]"); 
+        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
 
         $result = $objQuery;
         //$result = $objQuery->fetch(PDO::FETCH_ASSOC);
@@ -466,8 +466,47 @@ if (isset($_POST['tnr'])) {
 
         echo json_encode($return_arr);
 
-        mssql_close($objConnect); 
-        
+        mssql_close($objConnect);
+
+}
+
+
+if ($action == 'localviewrecipients') {
+
+//$objConnect = new PDO("mysql:host=$FCADR;dbname=$FCDB", $FCUID, $FCPWD);
+
+$objConnect = mssql_connect($FCADR,$FCUID,$FCPWD);
+$objDB = mssql_select_db($FCDB);
+
+mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
+
+$strSQL = "SELECT distinct b.UCCUNO as 'CustomerM3'
+	,a.Customer as 'CustomerFC'
+    ,LTRIM(RTRIM(case when c.OKCUNM is null then d.OKCUNM else c.OKCUNM end)) as 'CustomerName'
+	,ISNULL(TOemail,'-') as 'TOemail'
+	,ISNULL(CCemail,'-') as 'CCemail'
+        FROM dbo.Recipients a
+        full join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[O001002] b with(NOLOCK) on a.Customer = b.UCCUNO
+        left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] c with(NOLOCK) on a.Customer = c.OKCUNO
+        left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] d with(NOLOCK) on b.UCCUNO = d.OKCUNO";
+
+$objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
+
+$result = $objQuery;
+//$result = $objQuery->fetch(PDO::FETCH_ASSOC);
+
+while ( $row = mssql_fetch_assoc( $objQuery ) ) {
+	$row_array['CustomerM3'] = $row['CustomerM3'];
+        $row_array['CustomerFC'] = $row['CustomerFC'];
+	$row_array['TOemail'] = $row['TOemail'];
+	$row_array['CCemail'] = $row['CCemail'];
+    array_push($return_arr,$row_array);
+}
+
+echo json_encode($return_arr);
+
+mssql_close($objConnect);
+
 }
 
 

@@ -39,20 +39,12 @@ var viewlist = function(key) {
 
                     for (i = 0; i <data.length; i++) {
                         
-                        if(data[i].DIFF1>0){
-                            diff1='<style="background-color:green;"> ';
-                        }else if(data[i].DIFF1<0){
-                            diff1='<style="background-color:red;"> ';
-                        }else {
-                            diff1='<style="bgcolor:red"> ';
-                        }
-                        
                         if(data[i].TM3 !== null){
-                            LocalTM3='<i class="fas fa-arrow-right" style="color:green;"></i>M3: ' + data[i].TM3;
+                            LocalTM3= data[i].TM3;
                         }else{
                             LocalTM3='';
                         }
-                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "DIFF1":data[i].DIFF1,"Two": data[i].two,"DIFF2":data[i].DIFF2, "Three": data[i].three,"DIFF3":data[i].DIFF3, "Four": data[i].four,"DIFF4":data[i].DIFF4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC};
+                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC};
 
                         tabledata.push(row);
                     }
@@ -64,6 +56,50 @@ var viewlist = function(key) {
                     $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Five', title: moment(data[0].Period,"MM").add(4,"M").format("YYYY MMMM")});
                     $('#itemtable').bootstrapTable('refreshOptions', {});
                     $('#itemtable').bootstrapTable("load", tabledata);
+                    
+                }
+            }
+        });
+};
+
+var viewrecipients = function(key) {
+   
+        var row="";
+        var tabledatarec=[];
+        
+        $.ajax({
+            type: "GET",
+            url: "http://10.7.3.34/forecast/local_data.php?action=localviewrecipients",
+            cache: false,
+            dataType: "json",
+            success: function(data) {
+
+                if(data.length>0){
+                    
+                    var customer="";
+                    var status="";
+                    var TOemail="";
+                    var CCemail="";
+                    
+                    for (i = 0; i <data.length; i++) {
+                        
+                        if(data[i].CustomerM3 !== null && data[i].CustomerFC !== null){
+                            customer=data[i].CustomerFC;
+                            status=0;
+                        }
+                        else if(data[i].CustomerM3 !== null){
+                            customer=data[i].CustomerM3;
+                            status=0;
+                        }else if(data[i].CustomerFC !== null){
+                            customer=data[i].CustomerFC;
+                            status=1;
+                        }
+                        
+                        row={"Customer": customer,"CustomerName": data[i].CustomerName,"Status": status, "TOemail":data[i].TOemail, "CCemail":data[i].CCemail};
+
+                        tabledatarec.push(row);
+                    }
+                    $('#recipientstable').bootstrapTable("load", tabledatarec);
                     
                 }
             }
@@ -121,7 +157,7 @@ $("#updateM3datasetforecastbutton").click(function () {
 
 });
 
-$('#itemtable').on('editable-save.bs.table', function (a,b,data, row) {
+$('#itemtable').on('editable-save.bs.table', function (a,b,data,row) {
     
     var PrevStatus="";
     
@@ -146,21 +182,54 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,data, row) {
         dataType: "json",
         success: function (reply) {
             
-            PrevStatus=data.Status;
-            
             $('#itemtable').bootstrapTable('updateCell', {
                     index: reply.Index,
-                    field: 'Status',
-                    value: 'FC Update OK'
+                    field: 'UpdateStatus',
+                    value: '<i class="fas fa-check" style="color:green;"></i>'
                 });
             
             setTimeout(function() {
                 $('#itemtable').bootstrapTable('updateCell', {
                     index: reply.Index,
-                    field: 'Status',
-                    value: PrevStatus
+                    field: 'UpdateStatus',
+                    value: ''
                 });
-            }, 3000); 
+            }, 1000); 
+            
+        }
+    });
+        
+});
+
+$('#recipientstable').on('editable-save.bs.table', function (a,b,data,row) {
+       
+    var listdata={
+        'index': row,
+        'customer': data.Customer,
+        'toemail': data.TOemail,
+        'ccemail': data.CCemail
+    };
+
+    $.ajax({
+        url: "http://10.7.3.34/forecast/local_data.php?action=UpdateRecipients",
+        type: "POST",
+        data: listdata,
+        dataType: "json",
+        success: function (reply) {
+            
+            $('#itemtable').bootstrapTable('updateCell', {
+                    index: reply.Index,
+                    field: 'UpdateStatus',
+                    value: '<i class="fas fa-check" style="color:green;"></i>'
+                });
+            
+            setTimeout(function() {
+                $('#itemtable').bootstrapTable('updateCell', {
+                    index: reply.Index,
+                    field: 'UpdateStatus',
+                    value: ''
+                });
+            }, 1000); 
             
         }
     });
@@ -211,16 +280,16 @@ function UPDCFormatter (value, row, index) {
 }
   
   function cellStyle1(value, row, index) {
-    if (row.DIFF1>0) {
+    if (row.One>row.PREV1) {
       return {
         css: {
           'background-color': 'LightGreen'
         }
       };
-    }else if (row.DIFF1<0) {
+    }else if (row.One<row.PREV1) {
       return {
         css: {
-          'background-color': 'Tomato'
+          'background-color': '#ff9999'
         }
       };
     }else {
@@ -233,16 +302,16 @@ function UPDCFormatter (value, row, index) {
   }
 
 function cellStyle2(value, row, index) {
-    if (row.DIFF2>0) {
+    if (row.Two>row.PREV2) {
       return {
         css: {
           'background-color': 'LightGreen'
         }
       };
-    }else if (row.DIFF2<0) {
+    }else if (row.Two<row.PREV2) {
       return {
         css: {
-          'background-color': 'Tomato'
+          'background-color': '#ff9999'
         }
       };
     }else {
@@ -255,16 +324,16 @@ function cellStyle2(value, row, index) {
   }
   
   function cellStyle3(value, row, index) {
-    if (row.DIFF3>0) {
+    if (row.Three>row.PREV3) {
       return {
         css: {
           'background-color': 'LightGreen'
         }
       };
-    }else if (row.DIFF3<0) {
+    }else if (row.Three<row.PREV3) {
       return {
         css: {
-          'background-color': 'Tomato'
+          'background-color': '#ff9999'
         }
       };
     }else {
@@ -277,16 +346,16 @@ function cellStyle2(value, row, index) {
   }
   
   function cellStyle4(value, row, index) {
-    if (row.DIFF4>0) {
+    if (row.Four>row.PREV4) {
       return {
         css: {
           'background-color': 'LightGreen'
         }
       };
-    }else if (row.DIFF4<0) {
+    }else if (row.Four<row.PREV4) {
       return {
         css: {
-          'background-color': 'Tomato'
+          'background-color': '#ff9999'
         }
       };
     }else {
@@ -296,4 +365,21 @@ function cellStyle2(value, row, index) {
         }
       };
     }
+  }
+  
+  function rowStyle(row, index) {
+      if(row.Status==1){
+            return {
+                css: {
+                  'background-color': '#ff9999'
+                }
+            };
+      }else{
+          return {
+        css: {
+            'background-color': 'transparent'
+            } 
+        };
+      }
+    
   }
