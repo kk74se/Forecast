@@ -217,19 +217,21 @@ $('#recipientstable').on('editable-save.bs.table', function (a,b,data,row) {
         dataType: "json",
         success: function (reply) {
             
-            $('#itemtable').bootstrapTable('updateCell', {
+            $('#recipientstable').bootstrapTable('updateCell', {
                     index: reply.Index,
                     field: 'UpdateStatus',
                     value: '<i class="fas fa-check" style="color:green;"></i>'
                 });
             
             setTimeout(function() {
-                $('#itemtable').bootstrapTable('updateCell', {
+                $('#recipientstable').bootstrapTable('updateCell', {
                     index: reply.Index,
                     field: 'UpdateStatus',
                     value: ''
                 });
             }, 1000); 
+            
+            viewrecipients();
             
         }
     });
