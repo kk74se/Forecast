@@ -13,7 +13,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
-$('#customerheader').html("Local forecast </br>");
+$('#customerheader').html("Local forecast SE1</br>");
 
 moment.updateLocale('en-gb', {
 });
@@ -62,7 +62,7 @@ var viewlist = function(key) {
         });
 };
 
-var viewrecipients = function(key) {
+var viewrecipients = function() {
    
         var row="";
         var tabledatarec=[];
@@ -95,7 +95,7 @@ var viewrecipients = function(key) {
                             status=1;
                         }
                         
-                        row={"Customer": customer,"CustomerName": data[i].CustomerName,"Status": status, "TOemail":data[i].TOemail, "CCemail":data[i].CCemail};
+                        row={"Customer": customer,"CustomerName": data[i].CustomerName,"Status": status, "TOemail":data[i].TOemail, "CCemail":data[i].CCemail, "UPDC":data[i].UPDC};
 
                         tabledatarec.push(row);
                     }
@@ -159,8 +159,6 @@ $("#updateM3datasetforecastbutton").click(function () {
 
 $('#itemtable').on('editable-save.bs.table', function (a,b,data,row) {
     
-    var PrevStatus="";
-    
     var listdata={
         'index': row,
         'customer': data.CustNo,
@@ -215,8 +213,16 @@ $('#recipientstable').on('editable-save.bs.table', function (a,b,data,row) {
         type: "POST",
         data: listdata,
         dataType: "json",
+        complete: function (){
+            viewrecipients();
+        },
         success: function (reply) {
             
+            if(reply.hasOwnProperty('Error')){
+                viewrecipients();
+                console.log(reply.Error);
+                return;
+            }
             $('#recipientstable').bootstrapTable('updateCell', {
                     index: reply.Index,
                     field: 'UpdateStatus',
@@ -230,9 +236,7 @@ $('#recipientstable').on('editable-save.bs.table', function (a,b,data,row) {
                     value: ''
                 });
             }, 1000); 
-            
-            viewrecipients();
-            
+       
         }
     });
         
@@ -377,6 +381,14 @@ function cellStyle2(value, row, index) {
         '</button>'
     ].join(''); 
 }}
+
+  function ChangedFC (value, row, index) {
+    if(row.UPDC==1){
+            return '<i class="fas fa-check" style="color:green;"></i>'; 
+    }else{
+        return '';
+    }
+    }
 
 
 $('#recipientstable').on('click',".btn", function(){
