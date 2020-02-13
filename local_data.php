@@ -435,24 +435,90 @@ if (isset($_POST['tnr'])) {
 	exit();
 }
 
+if (isset($_POST['ChangedFCPeriod']) && !empty($_POST['ChangedFCPeriod'])) {
+	$ChangedFCPeriod = test_input($_POST['ChangedFCPeriod']);
+} else {
+	$return_arr['Error'] = "ChangedFCPeriod måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['QuantityFrom']) && !empty($_POST['QuantityFrom'])) {
+	$QuantityFrom = test_input($_POST['QuantityFrom']);
+} else {
+	$return_arr['Error'] = "QuantityFrom måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['QuantityTo']) && !empty($_POST['QuantityTo'])) {
+	$QuantityTo = test_input($_POST['QuantityTo']);
+} else {
+	$return_arr['Error'] = "QuantityTo måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['ChangeDateTime']) && !empty($_POST['ChangeDateTime'])) {
+	$ChangeDateTime = test_input($_POST['ChangeDateTime']);
+} else {
+	$return_arr['Error'] = "ChangeDateTime måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
         $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD);
         $objDB = mssql_select_db($FCDB);
 
         mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
 
         $strSQL = "BEGIN TRANSACTION;
-                DECLARE @ID [int];
-                DECLARE @RE [Int];
-                UPDATE [dbo].[ForecastData]
-                SET [1] = '".$one."'
-                        ,[2] = '".$two."'
-                        ,[3] = '".$three."'
-                        ,[4] = '".$four."'
-                        ,[5] = '".$five."'
-                WHERE [Customer]='".$customer."' and [PetItemNo]='".$item."' and [Year]='".$year."' and [Period]='".$period."' and [TNR]='".$tnr."';
-                SELECT @RE = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;
-                select @RE as Resultat;
-                COMMIT;";
+                    DECLARE @ID [int];
+                    DECLARE @RE [Int];
+                    DECLARE @RE2 [Int];
+                    UPDATE [dbo].[ForecastData]
+                    SET [1] = '".$one."'
+                            ,[2] = '".$two."'
+                            ,[3] = '".$three."'
+                            ,[4] = '".$four."'
+                            ,[5] = '".$five."'
+                    WHERE [Customer] = '".$customer."'
+                            and [PetItemNo] = '".$item."'
+                            and [Year] = '".$year."'
+                            and [Period] = '".$period."'
+                            and [TNR] = '".$tnr."';
+                    SELECT @RE = CASE 
+                                    WHEN @@ROWCOUNT = 0
+                                            THEN 0
+                                    ELSE 1
+                                    END;	
+                    INSERT INTO [dbo].[FCChanges]
+                                    ([Customer]
+                                    ,[PetItemNo]
+                                    ,[Year]
+                                    ,[ActiveFCPeriod]
+                                    ,[ChangedFCPeriod]
+                                    ,[QuantityFrom]
+                                    ,[QuantityTo]
+                                    ,[ChangedBy]
+                                    ,[ChangeDateTime])
+                            VALUES
+                                    ('".$customer."'
+                                    ,'".$item."'
+                                    ,'".$year."'
+                                    ,'".$period."'
+                                    ,'".$ChangedFCPeriod."'
+                                    ,'".$QuantityFrom."'
+                                    ,'".$QuantityTo."'
+                                    ,''
+                                    ,'".$ChangeDateTime."');
+                    SELECT @RE2 = CASE 
+                                    WHEN @@ROWCOUNT = 0
+                                            THEN 0
+                                    ELSE 1
+                                    END;
+                    select @RE+@RE2 as Resultat;
+                    COMMIT;";
 
         $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
 

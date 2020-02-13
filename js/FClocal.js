@@ -157,7 +157,28 @@ $("#updateM3datasetforecastbutton").click(function () {
 
 });
 
-$('#itemtable').on('editable-save.bs.table', function (a,b,data,row) {
+$('#itemtable').on('editable-save.bs.table', function (a,b,data,row,from) {
+    
+    var ChangedFCPeriod="";
+    var DT="";
+    
+    if(b=="One"){
+        ChangedFCPeriod=1;
+    }else if(b=="Two"){
+        ChangedFCPeriod=2;
+    }else if(b=="Three"){
+        ChangedFCPeriod=3;
+    }else if(b=="Four"){
+        ChangedFCPeriod=4;
+    }else if(b=="Five"){
+        ChangedFCPeriod=5;
+    }
+    
+    DT=moment().format("YYYY-MM-DD HH:mm:ss");
+    
+    console.log("Changed period: " + ChangedFCPeriod + " Changed value: " + from +" -> " + data[b] + " Time: " + DT);
+
+    
     
     var listdata={
         'index': row,
@@ -170,11 +191,16 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,data,row) {
         'three': data.Three,
         'four': data.Four,
         'five': data.Five,
-        'tnr': data.TNR
+        'tnr': data.TNR,
+        'ChangedFCPeriod':ChangedFCPeriod,
+        'QuantityFrom': from,
+        'QuantityTo': data[b],
+        'ChangeDateTime':DT
+        
     };
 
     $.ajax({
-        url: "http://10.7.3.34/forecast/local_data.php?action=UpdateForecast",
+        url: "http://10.7.3.3411/forecast/local_data.php?action=UpdateForecast",
         type: "POST",
         data: listdata,
         dataType: "json",
