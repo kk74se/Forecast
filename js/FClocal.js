@@ -44,7 +44,7 @@ var viewlist = function(key) {
                         }else{
                             LocalTM3='';
                         }
-                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC};
+                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC, "Changes":data[i].Changes};
 
                         tabledata.push(row);
                     }
@@ -141,6 +141,12 @@ $("#updateM3datasetforecastbutton").click(function () {
             type: "POST",
             data: listdata,
             dataType: "json",
+            beforeSend: function(){
+            $('#spinner').show();
+            },
+            complete: function(){
+                $('#spinner').hide();
+            },
             success: function (reply) {
                 count++;
                 if(reply.Resultat=="1"){
@@ -177,8 +183,6 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,data,row,from) {
     DT=moment().format("YYYY-MM-DD HH:mm:ss");
     
     console.log("Changed period: " + ChangedFCPeriod + " Changed value: " + from +" -> " + data[b] + " Time: " + DT);
-
-    
     
     var listdata={
         'index': row,
@@ -200,27 +204,20 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,data,row,from) {
     };
 
     $.ajax({
-        url: "http://10.7.3.3411/forecast/local_data.php?action=UpdateForecast",
+        url: "http://10.7.3.34/forecast/local_data.php?action=UpdateForecast",
         type: "POST",
         data: listdata,
         dataType: "json",
+        complete: function () {
+            viewlist();
+        },
         success: function (reply) {
-            
-            $('#itemtable').bootstrapTable('updateCell', {
-                    index: reply.Index,
-                    field: 'UpdateStatus',
-                    value: '<i class="fas fa-check" style="color:green;"></i>'
-                });
-            
-            setTimeout(function() {
-                $('#itemtable').bootstrapTable('updateCell', {
-                    index: reply.Index,
-                    field: 'UpdateStatus',
-                    value: ''
-                });
-            }, 1000); 
-            
-        }
+            if(reply.hasOwnProperty('Error')){
+                viewlist();
+                console.log(reply.Error);
+                return;
+            }
+            }
     });
         
 });

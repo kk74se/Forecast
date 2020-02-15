@@ -44,11 +44,14 @@ $strSQL = "SELECT a.Customer
 	,a.TND
         ,a.TM3
         ,a.UPDC
-FROM dbo.ForecastData a
-left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] b with(NOLOCK) on a.Customer = b.OKCUNO
-left join dbo.ForecastData c on a.Customer=c.Customer and a.PetItemNo=c.PetItemNo and c.Period = month(DATEADD(month, -1, GETDATE())) and c.Year = year(DATEADD(month, -1, GETDATE()))
-where a.[Year]=year(getdate()) and a.[Period]=month(getdate())
-order by TNR desc, Customer";
+        ,(select count(ID) d
+            from dbo.FCChanges
+            where a.Customer=Customer and a.Year = Year and a.Period = ActiveFCPeriod and a.PetItemNo = PetItemNo) as 'Changes'
+    FROM dbo.ForecastData a
+    left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] b with(NOLOCK) on a.Customer = b.OKCUNO
+    left join dbo.ForecastData c on a.Customer=c.Customer and a.PetItemNo=c.PetItemNo and c.Period = month(DATEADD(month, -1, GETDATE())) and c.Year = year(DATEADD(month, -1, GETDATE()))
+    where a.[Year]=year(getdate()) and a.[Period]=month(getdate())
+    order by TNR desc, Customer";
 
 $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
 
@@ -76,6 +79,7 @@ while ( $row = mssql_fetch_assoc( $objQuery ) ) {
         $row_array['TND'] = $row['TND'];
         $row_array['TM3'] = $row['TM3'];
         $row_array['UPDC'] = $row['UPDC'];
+        $row_array['Changes'] = $row['Changes'];
     array_push($return_arr,$row_array);
 }
 
@@ -318,8 +322,7 @@ for ($x = 0; $x < 5; $x++) {
                     set [TM3]=@DT
                     where [Customer]='".$customer."' and [PetItemNo]='".$item."' and [Year]='".$year."' and [Period]='".$period."';
                     SELECT @RE = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;
-                    select @RE as Resultat;
-                    select @DT as UpdateDate;
+                    select @RE as Resultat, @DT as UpdateDate;
                     COMMIT;";
 
         $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
@@ -330,7 +333,7 @@ for ($x = 0; $x < 5; $x++) {
         while ( $row = mssql_fetch_assoc($objQuery)) {
             $return_arr['Resultat'] = $row['Resultat'];
             $return_arr['Index'] = $Index;
-            $return_arr['Date'] = $row['Updatedate'];
+            $return_arr['Date'] = $row['UpdateDate'];
         }
 
         echo json_encode($return_arr);
@@ -443,7 +446,7 @@ if (isset($_POST['ChangedFCPeriod']) && !empty($_POST['ChangedFCPeriod'])) {
 	exit();
 }
 
-if (isset($_POST['QuantityFrom']) && !empty($_POST['QuantityFrom'])) {
+if (isset($_POST['QuantityFrom'])) {
 	$QuantityFrom = test_input($_POST['QuantityFrom']);
 } else {
 	$return_arr['Error'] = "QuantityFrom måste anges";
@@ -451,7 +454,7 @@ if (isset($_POST['QuantityFrom']) && !empty($_POST['QuantityFrom'])) {
 	exit();
 }
 
-if (isset($_POST['QuantityTo']) && !empty($_POST['QuantityTo'])) {
+if (isset($_POST['QuantityTo'])) {
 	$QuantityTo = test_input($_POST['QuantityTo']);
 } else {
 	$return_arr['Error'] = "QuantityTo måste anges";
@@ -575,6 +578,125 @@ mssql_close($objConnect);
 
 }
 
+if ($action == 'UpdateRecipients') { 
+    
+if (isset($_POST['index'])) {
+    if (is_numeric(test_input($_POST['index']))){
+        $index=test_input($_POST['index']);
+    }else{
+        $return_arr['Error'] = "Index missing";
+        echo json_encode($return_arr);
+        exit();
+    }   
+} else {
+    $return_arr['Error'] = "no index";
+    echo json_encode($return_arr);
+    exit();
+}
+
+if (isset($_POST['customer']) && !empty($_POST['customer'])) {
+	$customer = test_input($_POST['customer']);
+} else {
+	$return_arr['Error'] = "Customer måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['toemail']) && !empty($_POST['toemail'])) {
+	$toemail = test_input($_POST['toemail']);
+} else {
+	$return_arr['Error'] = "TOemail måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['ccemail'])) {
+	$ccemail = test_input($_POST['ccemail']);
+} else {
+	$return_arr['Error'] = "CCemail error";
+	echo json_encode($return_arr);
+	exit();
+}
+
+        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD); 
+        $objDB = mssql_select_db($FCDB);  
+
+        mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
+
+        $strSQL = "BEGIN TRANSACTION;
+                DECLARE @ID [int];
+                DECLARE @RE [Int]; 
+                UPDATE [dbo].[Recipients]
+    				SET [TOemail] = '".$toemail."'
+    					,[CCemail] = '".$ccemail."'
+    				WHERE [Customer] = '".$customer."'
+					IF @@ROWCOUNT=0
+					INSERT INTO [dbo].[Recipients] (
+                    	[Customer]
+    					,[TOemail]
+    					,[CCemail])
+					VALUES (
+                    	'".$customer."'
+    					,'".$toemail."'
+    					,'".$ccemail."');
+                SELECT @RE = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;
+                select @RE as Resultat;
+                COMMIT;"; 
+
+        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]"); 
+
+        $result = $objQuery;
+        //$result = $objQuery->fetch(PDO::FETCH_ASSOC);
+
+        while ( $row = mssql_fetch_assoc($objQuery)) {
+            $return_arr['Resultat'] = $row['Resultat'];
+            $return_arr['Index'] = $index;
+        }
+
+        echo json_encode($return_arr);
+
+        mssql_close($objConnect); 
+        
+}
+
+if ($action == 'DeleteRecipients') { 
+    
+if (isset($_POST['customer']) && !empty($_POST['customer'])) {
+	$customer = test_input($_POST['customer']);
+} else {
+	$return_arr['Error'] = "Customer måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD); 
+        $objDB = mssql_select_db($FCDB);  
+
+        mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
+
+        $strSQL = "BEGIN TRANSACTION;
+        		DECLARE @RE [Int];
+                delete 
+                from [dbo].[Recipients]
+    			WHERE [Customer] = '".$customer."';
+                SELECT @RE = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;
+                select @RE as Resultat;
+                COMMIT;"; 
+
+        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]"); 
+
+        $result = $objQuery;
+        //$result = $objQuery->fetch(PDO::FETCH_ASSOC);
+
+        while ( $row = mssql_fetch_assoc($objQuery)) {
+            $return_arr['Resultat'] = $row['Resultat'];
+        }
+
+        echo json_encode($return_arr);
+
+        mssql_close($objConnect); 
+        
+}
 
 function test_input($data) {
   $data = trim($data);

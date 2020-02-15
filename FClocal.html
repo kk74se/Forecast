@@ -39,9 +39,14 @@
         <div class="col-md-4 padtop15">
             <a class="item-text" id="customerheader"></a>
         </div>     
-        <div class="col-md-4 padtop15">
+        <div class="col-md-3 padtop15">
             <a class="item-text" id="updateheader"></a>
         </div> 
+        <div class='col-md-1 padtop15 padbottom15'>
+            <div id="spinner" class="pull-right" style="display:none">
+                <img id="img-spinner" src="img/ajax-loader.gif" alt="Loading"/>
+            </div> 
+        </div>
         <div class="col-md-2 padtop15">
             <button type="button" style="width:100%; height:100%;" class="btn btn-success btn-block btn-lg" id="updateM3datasetforecastbutton"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Update M3 Dataset</button>
         </div>
@@ -66,7 +71,7 @@
                                 <th data-field="ItemName">Item</th>
                                 <th data-field="Year" data-visible="false">Year</th>
                                 <th data-field="Period" data-visible="false">Period</th>                              
-                                <th data-field="UpdateStatus"><i class="fas fa-arrow-right" style="color:green;"></i> FC</th>
+                                <th data-field="Changes">Changes</th>
                                 <th data-field="One" data-editable="true" data-cell-style="cellStyle1">1</th>
                                 <th data-field="PREV1" data-visible="false">PREV1</th>
                                 <th data-field="Two" data-editable="true" data-cell-style="cellStyle2">2</th>
