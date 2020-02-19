@@ -44,7 +44,7 @@ var viewlist = function(key) {
                         }else{
                             LocalTM3='';
                         }
-                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC, "Changes":data[i].Changes};
+                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC};
 
                         tabledata.push(row);
                     }
@@ -111,10 +111,6 @@ $("#updateM3datasetforecastbutton").click(function () {
     var count=0;
     data=$('#itemtable').bootstrapTable('getData');
 
-	$("#updateM3datasetforecastbutton").prop("disabled",true);
-    $("#updateM3datasetforecastbutton").addClass("btn-warning").removeClass("btn-success");
-    $("#updateM3datasetforecastbutton").html('<i class="fas fa-wrench" aria-hidden="true"></i> Updating');
-
     for (i = 0; i < data.length; i++) {
 
         var listdata={
@@ -159,30 +155,9 @@ $("#updateM3datasetforecastbutton").click(function () {
         
     }
 
-	$("#updateM3datasetforecastbutton").prop("disabled",false);
-    $("#updateM3datasetforecastbutton").addClass("btn-success").removeClass("btn-warning");
-    $("#updateM3datasetforecastbutton").html('<i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Update M3 Dataset');
-
 });
 
-$('#itemtable').on('editable-save.bs.table', function (a,b,data,row,from) {
-    
-    var ChangedFCPeriod="";
-    var DT="";
-    
-    if(b=="One"){
-        ChangedFCPeriod=1;
-    }else if(b=="Two"){
-        ChangedFCPeriod=2;
-    }else if(b=="Three"){
-        ChangedFCPeriod=3;
-    }else if(b=="Four"){
-        ChangedFCPeriod=4;
-    }else if(b=="Five"){
-        ChangedFCPeriod=5;
-    }
-    
-    DT=moment().format("YYYY-MM-DD HH:mm:ss");
+$('#itemtable').on('editable-save.bs.table', function (a,b,data,row) {
     
     var listdata={
         'index': row,
@@ -195,12 +170,7 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,data,row,from) {
         'three': data.Three,
         'four': data.Four,
         'five': data.Five,
-        'tnr': data.TNR,
-        'ChangedFCPeriod':ChangedFCPeriod,
-        'QuantityFrom': from,
-        'QuantityTo': data[b],
-        'ChangeDateTime':DT
-        
+        'tnr': data.TNR
     };
 
     $.ajax({
@@ -208,16 +178,23 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,data,row,from) {
         type: "POST",
         data: listdata,
         dataType: "json",
-        complete: function () {
-            viewlist();
-        },
         success: function (reply) {
-            if(reply.hasOwnProperty('Error')){
-                viewlist();
-                console.log(reply.Error);
-                return;
-            }
-            }
+            
+            $('#itemtable').bootstrapTable('updateCell', {
+                    index: reply.Index,
+                    field: 'UpdateStatus',
+                    value: '<i class="fas fa-check" style="color:green;"></i>'
+                });
+            
+            setTimeout(function() {
+                $('#itemtable').bootstrapTable('updateCell', {
+                    index: reply.Index,
+                    field: 'UpdateStatus',
+                    value: ''
+                });
+            }, 1000); 
+            
+        }
     });
         
 });

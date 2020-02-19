@@ -44,14 +44,11 @@ $strSQL = "SELECT a.Customer
 	,a.TND
         ,a.TM3
         ,a.UPDC
-        ,(select count(ID) d
-            from dbo.FCChanges
-            where a.Customer=Customer and a.Year = Year and a.Period = ActiveFCPeriod and a.PetItemNo = PetItemNo) as 'Changes'
-    FROM dbo.ForecastData a
-    left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] b with(NOLOCK) on a.Customer = b.OKCUNO
-    left join dbo.ForecastData c on a.Customer=c.Customer and a.PetItemNo=c.PetItemNo and c.Period = month(DATEADD(month, -1, GETDATE())) and c.Year = year(DATEADD(month, -1, GETDATE()))
-    where a.[Year]=year(getdate()) and a.[Period]=month(getdate())
-    order by TNR desc, Customer";
+FROM dbo.ForecastData a
+left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] b with(NOLOCK) on a.Customer = b.OKCUNO
+left join dbo.ForecastData c on a.Customer=c.Customer and a.PetItemNo=c.PetItemNo and c.Period = month(DATEADD(month, -1, GETDATE())) and c.Year = year(DATEADD(month, -1, GETDATE()))
+where a.[Year]=year(getdate()) and a.[Period]=month(getdate())
+order by TNR desc, Customer";
 
 $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
 
@@ -79,7 +76,6 @@ while ( $row = mssql_fetch_assoc( $objQuery ) ) {
         $row_array['TND'] = $row['TND'];
         $row_array['TM3'] = $row['TM3'];
         $row_array['UPDC'] = $row['UPDC'];
-        $row_array['Changes'] = $row['Changes'];
     array_push($return_arr,$row_array);
 }
 
@@ -89,15 +85,15 @@ mssql_close($objConnect);
 
 }
 
-if ($action == 'UpdateM3') {
-
+if ($action == 'UpdateM3') { 
+    
 $divi = 'SE1';
 $file = 'O001002';
 $dataset = 'SE1F'; //SBDS
 $version = '0000'; //BVER
 $type = '33'; //SSTT
 $oslevel = '0'; //OSLE
-$url = 'https://selidm3ph01.petainer.com:20108/m3api-rest/execute'; //PRD!
+$url = 'https://selidm3tdh01.petainer.com:21108/m3api-rest/execute'; 
 
 // DEV	https://selidm3tdh01.petainer.com:22108/m3api-rest/execute
 // TST	https://selidm3tdh01.petainer.com:21108/m3api-rest/execute
@@ -110,7 +106,7 @@ if (isset($_POST['Index'])) {
         $return_arr['Error'] = "Index missing";
         echo json_encode($return_arr);
         exit();
-    }
+    }   
 } else {
     $return_arr['Error'] = "no index";
     echo json_encode($return_arr);
@@ -266,9 +262,9 @@ $Quantity = array($oneQ, $twoQ, $threeQ, $fourQ, $fiveQ);
 $x=0;
 $resultM3=1;
 for ($x = 0; $x < 5; $x++) {
-
+   
     $curl = curl_init();
-
+    
         curl_setopt_array($curl, array(
           CURLOPT_URL => $url ."/OSS401MI/SndBudgets?CONO=001&DIVI=".$divi."&SBDS=".$dataset."&FILE=".$file."&BVER=".$version."&SSTT=".$type."&OSLE=".$oslevel."&YEA4=".$Years[$x]."&PERI=".$Periods[$x]."&KEY1=".$divi."&KEY2=".$customer."&KEY3=".$item."&CL01=".$Quantity[$x],
           CURLOPT_RETURNTRANSFER => true,
@@ -282,7 +278,7 @@ for ($x = 0; $x < 5; $x++) {
             "Authorization: Basic QUdWVVNSQHBldGFpbmVyLmNvbTpMaWRQZXQxMDEw",
             "Cache-Control: no-cache",
             "Connection: keep-alive",
-            "Host: selidm3ph01.petainer.com:20108",
+            "Host: selidm3tdh01.petainer.com:21108",
             "accept-encoding: gzip, deflate",
             "cache-control: no-cache"
           ),
@@ -307,25 +303,25 @@ for ($x = 0; $x < 5; $x++) {
         }else{
             $M3Status=2;
         }
-
-        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD);
-        $objDB = mssql_select_db($FCDB);
+                   
+        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD); 
+        $objDB = mssql_select_db($FCDB);  
 
         mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
 
         $strSQL = "BEGIN TRANSACTION;
                     DECLARE @ID [int];
-                    DECLARE @RE [Int];
+                    DECLARE @RE [Int]; 
                     DECLARE @DT [date];
                     set @DT=(select FORMAT (getdate(), 'yyyy-MM-dd'));
-                    update [dbo].[ForecastData]
+                    update [dbo].[ForecastData] 
                     set [TM3]=@DT
                     where [Customer]='".$customer."' and [PetItemNo]='".$item."' and [Year]='".$year."' and [Period]='".$period."';
                     SELECT @RE = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;
-                    select @RE as Resultat, @DT as UpdateDate;
-                    COMMIT;";
+                    select @RE as Resultat,@DT as UpdateDate;
+                    COMMIT;"; 
 
-        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
+        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]"); 
 
         $result = $objQuery;
         //$result = $objQuery->fetch(PDO::FETCH_ASSOC);
@@ -338,12 +334,12 @@ for ($x = 0; $x < 5; $x++) {
 
         echo json_encode($return_arr);
 
-        mssql_close($objConnect);
-
+        mssql_close($objConnect); 
+        
 }
 
-if ($action == 'UpdateForecast') {
-
+if ($action == 'UpdateForecast') { 
+    
 if (isset($_POST['index'])) {
     if (is_numeric(test_input($_POST['index']))){
         $index=test_input($_POST['index']);
@@ -351,7 +347,7 @@ if (isset($_POST['index'])) {
         $return_arr['Error'] = "Index missing";
         echo json_encode($return_arr);
         exit();
-    }
+    }   
 } else {
     $return_arr['Error'] = "no index";
     echo json_encode($return_arr);
@@ -437,93 +433,27 @@ if (isset($_POST['tnr'])) {
 	echo json_encode($return_arr);
 	exit();
 }
-
-if (isset($_POST['ChangedFCPeriod']) && !empty($_POST['ChangedFCPeriod'])) {
-	$ChangedFCPeriod = test_input($_POST['ChangedFCPeriod']);
-} else {
-	$return_arr['Error'] = "ChangedFCPeriod måste anges";
-	echo json_encode($return_arr);
-	exit();
-}
-
-if (isset($_POST['QuantityFrom'])) {
-	$QuantityFrom = test_input($_POST['QuantityFrom']);
-} else {
-	$return_arr['Error'] = "QuantityFrom måste anges";
-	echo json_encode($return_arr);
-	exit();
-}
-
-if (isset($_POST['QuantityTo'])) {
-	$QuantityTo = test_input($_POST['QuantityTo']);
-} else {
-	$return_arr['Error'] = "QuantityTo måste anges";
-	echo json_encode($return_arr);
-	exit();
-}
-
-if (isset($_POST['ChangeDateTime']) && !empty($_POST['ChangeDateTime'])) {
-	$ChangeDateTime = test_input($_POST['ChangeDateTime']);
-} else {
-	$return_arr['Error'] = "ChangeDateTime måste anges";
-	echo json_encode($return_arr);
-	exit();
-}
-
-        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD);
-        $objDB = mssql_select_db($FCDB);
+           
+        $objConnect = mssql_connect($FCADR,$FCUID,$FCPWD); 
+        $objDB = mssql_select_db($FCDB);  
 
         mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
 
         $strSQL = "BEGIN TRANSACTION;
-                    DECLARE @ID [int];
-                    DECLARE @RE [Int];
-                    DECLARE @RE2 [Int];
-                    UPDATE [dbo].[ForecastData]
-                    SET [1] = '".$one."'
-                            ,[2] = '".$two."'
-                            ,[3] = '".$three."'
-                            ,[4] = '".$four."'
-                            ,[5] = '".$five."'
-                    WHERE [Customer] = '".$customer."'
-                            and [PetItemNo] = '".$item."'
-                            and [Year] = '".$year."'
-                            and [Period] = '".$period."'
-                            and [TNR] = '".$tnr."';
-                    SELECT @RE = CASE 
-                                    WHEN @@ROWCOUNT = 0
-                                            THEN 0
-                                    ELSE 1
-                                    END;	
-                    INSERT INTO [dbo].[FCChanges]
-                                    ([Customer]
-                                    ,[PetItemNo]
-                                    ,[Year]
-                                    ,[ActiveFCPeriod]
-                                    ,[ChangedFCPeriod]
-                                    ,[QuantityFrom]
-                                    ,[QuantityTo]
-                                    ,[ChangedBy]
-                                    ,[ChangeDateTime])
-                            VALUES
-                                    ('".$customer."'
-                                    ,'".$item."'
-                                    ,'".$year."'
-                                    ,'".$period."'
-                                    ,'".$ChangedFCPeriod."'
-                                    ,'".$QuantityFrom."'
-                                    ,'".$QuantityTo."'
-                                    ,''
-                                    ,'".$ChangeDateTime."');
-                    SELECT @RE2 = CASE 
-                                    WHEN @@ROWCOUNT = 0
-                                            THEN 0
-                                    ELSE 1
-                                    END;
-                    select @RE+@RE2 as Resultat;
-                    COMMIT;";
+                DECLARE @ID [int];
+                DECLARE @RE [Int]; 
+                UPDATE [dbo].[ForecastData]
+                SET [1] = '".$one."'
+                        ,[2] = '".$two."'
+                        ,[3] = '".$three."'
+                        ,[4] = '".$four."'
+                        ,[5] = '".$five."'
+                WHERE [Customer]='".$customer."' and [PetItemNo]='".$item."' and [Year]='".$year."' and [Period]='".$period."' and [TNR]='".$tnr."';
+                SELECT @RE = CASE WHEN @@ROWCOUNT = 0 THEN 0 ELSE 1 END;
+                select @RE as Resultat;
+                COMMIT;"; 
 
-        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
+        $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]"); 
 
         $result = $objQuery;
         //$result = $objQuery->fetch(PDO::FETCH_ASSOC);
@@ -535,10 +465,9 @@ if (isset($_POST['ChangeDateTime']) && !empty($_POST['ChangeDateTime'])) {
 
         echo json_encode($return_arr);
 
-        mssql_close($objConnect);
-
+        mssql_close($objConnect); 
+        
 }
-
 
 if ($action == 'localviewrecipients') {
 
@@ -702,7 +631,6 @@ if (isset($_POST['customer']) && !empty($_POST['customer'])) {
         mssql_close($objConnect); 
         
 }
-
 
 function test_input($data) {
   $data = trim($data);
