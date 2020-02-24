@@ -443,3 +443,84 @@ $('#DeleteRecipientsButton').click(function(){
     });   
     }
 });
+
+/* Bind to 'click-cell' */
+$('#itemtable').on('click-cell.bs.table', onClickCell);
+
+function onClickCell(event, field, value, row, $element) {
+    
+    var onetoo = "";
+    var onefrom = "";
+    var twotoo = "";
+    var twofrom = "";
+    var threetoo = "";
+    var threefrom = "";
+    var fourtoo = "";
+    var fourfrom = "";
+    var fivetoo = "";
+    var fivefrom = "";
+    var changestabledata = [];
+    
+    if(field=="Changes"&&value>0){
+        
+        var changesdata={
+            'customer': row.CustNo,
+            'item': row.ItemNo,
+            'year': row.Year,
+            'period': row.Period
+        };
+
+        $.ajax({
+            url: "http://10.7.3.34/forecast/local_data.php?action=localviewchanges",
+            type: "POST",
+            data: changesdata,
+            dataType: "json",
+            success: function (data) {
+
+                if(data.length>0){
+
+                    for (i = 0; i <data.length; i++) {
+                        
+                        oneto = "";
+                        onefrom = "";
+                        twoto = "";
+                        twofrom = "";
+                        threeto = "";
+                        threefrom = "";
+                        fourto = "";
+                        fourfrom = "";
+                        fiveto = "";
+                        fivefrom = "";
+                        
+                        if(data[i].ChangedFCPeriod == 1){
+                            onefrom = data[i].QuantityFrom;
+                            oneto = data[i].QuantityTo;
+                        }else if(data[i].ChangedFCPeriod == 2){
+                            twofrom = data[i].QuantityFrom;
+                            twoto = data[i].QuantityTo;
+                        }else if(data[i].ChangedFCPeriod == 3){
+                            threefrom = data[i].QuantityFrom;
+                            threeto = data[i].QuantityTo;
+                        }else if(data[i].ChangedFCPeriod == 4){
+                            fourfrom = data[i].QuantityFrom;
+                            fourto = data[i].QuantityTo;
+                        }else if(data[i].ChangedFCPeriod == 5){
+                            fivefrom = data[i].QuantityFrom;
+                            fiveto = data[i].QuantityTo;
+                        }
+                            
+                        row={"Date": data[i].ChangeDateTime,"onefrom": onefrom, "oneto":oneto, "twofrom":twofrom, "twoto":twoto, "threefrom":threefrom, "threeto":threeto, "fourfrom":fourfrom, "fourto":fourto, "fivefrom":fivefrom, "fiveto":fiveto};
+
+                        changestabledata.push(row);
+                    }
+                    $('#changestable').bootstrapTable('refreshOptions', {});
+                    $('#changestable').bootstrapTable("load", changestabledata);
+                    $('#Changesmodal').modal('show');
+                    
+                }
+
+            }
+        });
+    }
+
+}
