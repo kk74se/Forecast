@@ -27,6 +27,7 @@ var viewlist = function(key) {
         var diff3="";
         var diff4="";
         var localTM3="";
+        var changes ="";
         
         $.ajax({
             type: "GET",
@@ -44,7 +45,12 @@ var viewlist = function(key) {
                         }else{
                             LocalTM3='';
                         }
-                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC, "Changes":data[i].Changes};
+                        if(data[i].Changes>0){
+                            changes=data[i].Changes;
+                        }else{
+                            changes="";
+                        }    
+                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC, "Changes":changes};
 
                         tabledata.push(row);
                     }
@@ -447,27 +453,23 @@ $('#DeleteRecipientsButton').click(function(){
 /* Bind to 'click-cell' */
 $('#itemtable').on('click-cell.bs.table', onClickCell);
 
-function onClickCell(event, field, value, row, $element) {
+function onClickCell(event, field, value, rowdata, $element) {
     
-    var onetoo = "";
-    var onefrom = "";
-    var twotoo = "";
-    var twofrom = "";
-    var threetoo = "";
-    var threefrom = "";
-    var fourtoo = "";
-    var fourfrom = "";
-    var fivetoo = "";
-    var fivefrom = "";
+    var one = "";
+    var two = "";
+    var three = "";
+    var four = "";
+    var five = "";
+    var pointer = "";
     var changestabledata = [];
     
     if(field=="Changes"&&value>0){
         
         var changesdata={
-            'customer': row.CustNo,
-            'item': row.ItemNo,
-            'year': row.Year,
-            'period': row.Period
+            'customer': rowdata.CustNo,
+            'item': rowdata.ItemNo,
+            'year': rowdata.Year,
+            'period': rowdata.Period
         };
 
         $.ajax({
@@ -481,38 +483,40 @@ function onClickCell(event, field, value, row, $element) {
 
                     for (i = 0; i <data.length; i++) {
                         
-                        oneto = "";
-                        onefrom = "";
-                        twoto = "";
-                        twofrom = "";
-                        threeto = "";
-                        threefrom = "";
-                        fourto = "";
-                        fourfrom = "";
-                        fiveto = "";
-                        fivefrom = "";
+                        one = "";
+                        two = "";
+                        three = "";
+                        four = "";
+                        five = "";
+                        
+                        if(data[i].QuantityFrom < data[i].QuantityTo){
+                            pointer = ' <i class="fas fa-arrow-right" style="color:green;"></i> ';
+                        } else {
+                            pointer = ' <i class="fas fa-arrow-right" style="color:red;"></i> ';
+                        }
                         
                         if(data[i].ChangedFCPeriod == 1){
-                            onefrom = data[i].QuantityFrom;
-                            oneto = data[i].QuantityTo;
+                            one = data[i].QuantityFrom + pointer + data[i].QuantityTo;
                         }else if(data[i].ChangedFCPeriod == 2){
-                            twofrom = data[i].QuantityFrom;
-                            twoto = data[i].QuantityTo;
+                            two = data[i].QuantityFrom + pointer + data[i].QuantityTo;
                         }else if(data[i].ChangedFCPeriod == 3){
-                            threefrom = data[i].QuantityFrom;
-                            threeto = data[i].QuantityTo;
+                            three = data[i].QuantityFrom + pointer + data[i].QuantityTo;
                         }else if(data[i].ChangedFCPeriod == 4){
-                            fourfrom = data[i].QuantityFrom;
-                            fourto = data[i].QuantityTo;
+                            four = data[i].QuantityFrom + pointer + data[i].QuantityTo;
                         }else if(data[i].ChangedFCPeriod == 5){
-                            fivefrom = data[i].QuantityFrom;
-                            fiveto = data[i].QuantityTo;
+                            five = data[i].QuantityFrom + pointer + data[i].QuantityTo;
                         }
                             
-                        row={"Date": data[i].ChangeDateTime,"onefrom": onefrom, "oneto":oneto, "twofrom":twofrom, "twoto":twoto, "threefrom":threefrom, "threeto":threeto, "fourfrom":fourfrom, "fourto":fourto, "fivefrom":fivefrom, "fiveto":fiveto};
+                        row={"Date": moment(data[i].ChangeDateTime).format("YYYY-MM-DD HH:mm"),"One":one, "Two":two, "Three":three, "Four":four, "Five":five};
 
                         changestabledata.push(row);
                     }
+                    $('#Changesmodalheadertext').html("Changes for Customer: " + rowdata.CustNo + ", Item: " + rowdata.ItemNo + ", Period: " + rowdata.Period);
+                    $('#changestable').bootstrapTable('updateColumnTitle', {field: 'One', title: moment(rowdata.Period,"MM").format("YYYY MMMM")});
+                    $('#changestable').bootstrapTable('updateColumnTitle', {field: 'Two', title: moment(rowdata.Period,"MM").add(1,"M").format("YYYY MMMM")});
+                    $('#changestable').bootstrapTable('updateColumnTitle', {field: 'Three', title: moment(rowdata.Period,"MM").add(2,"M").format("YYYY MMMM")});
+                    $('#changestable').bootstrapTable('updateColumnTitle', {field: 'Four', title: moment(rowdata.Period,"MM").add(3,"M").format("YYYY MMMM")});
+                    $('#changestable').bootstrapTable('updateColumnTitle', {field: 'Five', title: moment(rowdata.Period,"MM").add(4,"M").format("YYYY MMMM")});
                     $('#changestable').bootstrapTable('refreshOptions', {});
                     $('#changestable').bootstrapTable("load", changestabledata);
                     $('#Changesmodal').modal('show');
