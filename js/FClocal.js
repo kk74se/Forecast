@@ -215,15 +215,21 @@ $('#itemtable').on('editable-save.bs.table', function (a,b,data,row,from) {
         data: listdata,
         dataType: "json",
         complete: function () {
-            viewlist();
+            
         },
         success: function (reply) {
             if(reply.hasOwnProperty('Error')){
                 viewlist();
                 console.log(reply.Error);
                 return;
+            }else{
+                $('#itemtable').bootstrapTable('updateCell', {
+                    index: reply.Index,
+                    field: 'Changes',
+                    value: reply.Changes
+                });
             }
-            }
+        }
     });
         
 });
