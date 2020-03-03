@@ -101,7 +101,7 @@ var viewrecipients = function() {
                             status=1;
                         }
                         
-                        row={"Customer": customer,"CustomerName": data[i].CustomerName,"Status": status, "TOemail":data[i].TOemail, "CCemail":data[i].CCemail, "UPDC":data[i].UPDC};
+                        row={"Customer": customer,"CustomerName": data[i].CustomerName,"Status": status, "TOemail":data[i].TOemail, "CCemail":data[i].CCemail, "UPDC":data[i].UPDC, "OnlineFC":'<a href="https://forecast.petainer.se/index.html?key=' + data[i].Key + '" target="_blank"><i class="fas fa-link"></i></a>'};
 
                         tabledatarec.push(row);
                     }
@@ -397,6 +397,22 @@ function cellStyle2(value, row, index) {
       return {
         css: {
           'background-color': '#ff9999'
+        }
+      };
+    }else {
+      return {
+        css: {
+          'background-color': 'transparent'
+        }
+      };
+    }
+  }
+  
+  function cellStyle5(value, row, index) {
+    if (row.UPDC==1) {
+      return {
+        css: {
+          'background-color': 'LightGreen'
         }
       };
     }else {
