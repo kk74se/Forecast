@@ -35,10 +35,16 @@ var keylist = function(key) {
             success: function(data) {
 
                 if(data.length>0){
-
+                    
+                    var CustItemNo="";
                     for (i = 0; i <data.length; i++) {
+                        
+                        CustItemNo="";
+                        if(data[i].CustItemNo!== null){
+                            CustItemNo=data[i].CustItemNo;
+                        }
 
-                        row={"Customer": data[i].Customer, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo, "ItemName":data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>'};
+                        row={"Customer": data[i].Customer, "CustItemNo":CustItemNo, "ItemNo":data[i].ItemNo, "ItemName":data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period, "One": data[i].one, "Two": data[i].two, "Three": data[i].three, "Four": data[i].four, "Five": data[i].five, "Status": '<i class="fas fa-database" style="color:orange;"></i><a class="itemtabletext"> In Forecast</a>'};
 
                         tabledata.push(row);
                     }
@@ -53,10 +59,18 @@ var keylist = function(key) {
                     $('#itemtable').bootstrapTable('refreshOptions', {});
                     $('#itemtable').bootstrapTable("load", tabledata);
                     
+                    $('#updateforecastbutton').removeClass('d-none');
+                    $('#exportbutton').removeClass('d-none');
+                    $('#tabsnavigation').removeClass('d-none');
+                    $('#tabscontent').removeClass('d-none');
+                    
                 }
             }
         });
     }else{
+        $('#updateforecastbutton').addClass('d-none');
+        $('#tabsnavigation').addClass('d-none');
+        $('#tabscontent').addClass('d-none');
         $('#customerheader').html("The forecast adjustment period is not valid.</br>Please use the link sent to you between the dates specified.");
     }
 };
@@ -134,3 +148,9 @@ function GetKey(){
     
 }
 
+
+$("#exportbutton").click(function () {
+$('#itemtable').tableExport({type:'excel',
+                        mso: {fileFormat:'xmlss',
+                              worksheetName: ['Forecast']}});
+});

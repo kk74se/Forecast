@@ -54,13 +54,13 @@
     <hr>
     <ul class="nav nav-tabs">
         <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#ForecastItems">Forecast</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Recipients">Recipients</a></li> 
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Recipients">Recipients</a></li>
     </ul>
     <div class="tab-content">
         <div id="ForecastItems" class="tab-pane active">
             <div class="row">
                 <div class="col-12 padtop15">
-                    <table class="itemtabletext" data-toggle="table" data-filter-control="true" id="itemtable">
+                    <table class="itemtabletext" data-toggle="table" data-filter-control="true" id="itemtable" data-thead-classes="thead-light">
                         <thead>
                             <tr>
                                 <th data-field="CustItemNo" data-visible="false">Customer Item No</th>
@@ -93,7 +93,7 @@
         <div id="Recipients" class="tab-pane fade">
             <div class="row">
                 <div class="col-12 padtop15">
-                    <table class="itemtabletext" data-toggle="table" id="recipientstable">
+                    <table class="itemtabletext" data-toggle="table" id="recipientstable" data-thead-classes="thead-light">
                         <thead>
                             <tr>
                                 <th data-field="Customer" data-visible="true">Customer</th>

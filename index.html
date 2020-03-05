@@ -33,11 +33,11 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-72812484-3"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      //window.dataLayer = window.dataLayer || [];
+      //function gtag(){dataLayer.push(arguments);}
+      //gtag('js', new Date());
 
-      gtag('config', 'UA-72812484-3');
+      //gtag('config', 'UA-72812484-3');
     </script>
 
 </head>
@@ -53,23 +53,26 @@
         <div class="col-md-4 padtop15">
             <a class="item-text" id="customerheader"></a>
         </div>     
-        <div class="col-md-4 padtop15">
+        <div class="col-md-3 padtop15">
             <a class="item-text" id="updateheader"></a>
         </div> 
+        <div class="col-md-1 padtop15">
+            <button type="button" style="width:100%; height:100%;" class="btn btn-secondary btn-block btn-lg d-none" id="exportbutton"><i class="fas fa-file-download" aria-hidden="true"></i> Export</button>
+        </div>
         <div class="col-md-2 padtop15">
-            <button type="button" style="width:100%; height:100%;" class="btn btn-success btn-block btn-lg d-none" id="updateforecastbutton"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Update forecast</button>
+            <button type="button" style="width:100%; height:100%;" class="btn btn-primary btn-block btn-lg d-none" id="updateforecastbutton"><i class="fas fa-arrow-up" aria-hidden="true"></i> Update forecast</button>
         </div> 
     </div> 
     <hr>
     <ul class="nav nav-tabs d-none" id="tabsnavigation">
         <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#ForecastItems">Forecast</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Help">Help</a></li> 
+        <!--<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Help">Help</a></li>-->
     </ul>
     <div class="tab-content d-none" id="tabscontent">
         <div id="ForecastItems" class="tab-pane active">
             <div class="row">
                 <div class="col-12 padtop15">
-                    <table class="itemtabletext" data-toggle="table" data-show-export="true" data-export-types="['xlsx', 'pdf']" id="itemtable">
+                    <table class="itemtabletext" data-toggle="table" data-show-export="false" data-export-types="['pdf', 'csv']" data-thead-classes="thead-light" id="itemtable">
                         <thead>
                             <tr>
                                 <th data-field="CustItemNo" data-visible="true">Customer Item No</th>
