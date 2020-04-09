@@ -50,7 +50,7 @@ var viewlist = function(key) {
                         }else{
                             changes="";
                         }    
-                        row={"CustNo": data[i].Customer,"CustName": data[i].CustomerName, "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC, "Changes":changes};
+                        row={"CustNo": data[i].Customer,"CustName": CFL(data[i].CustomerName), "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC, "Changes":changes};
 
                         tabledata.push(row);
                     }
@@ -101,7 +101,7 @@ var viewrecipients = function() {
                             status=1;
                         }
                         
-                        row={"Customer": customer,"CustomerName": data[i].CustomerName,"Status": status, "TOemail":data[i].TOemail, "CCemail":data[i].CCemail, "UPDC":data[i].UPDC, "OnlineFC":'<a href="https://forecast.petainer.se/index.html?key=' + data[i].Key + '" target="_blank"><i class="fas fa-link"></i></a>'};
+                        row={"Customer": customer,"CustomerName": CFL(data[i].CustomerName),"Status": status, "TOemail":data[i].TOemail, "CCemail":data[i].CCemail, "UPDC":data[i].UPDC, "OnlineFC":'<a href="https://forecast.petainer.se/index.html?key=' + data[i].Key + '" target="_blank"><i class="fas fa-link"></i></a>'};
 
                         tabledatarec.push(row);
                     }
@@ -550,3 +550,21 @@ function onClickCell(event, field, value, rowdata, $element) {
     }
 
 }
+
+function CFL(string) {
+    
+    string = string.trim().toUpperCase();
+    
+    string2=string.slice(-3);
+    
+    if(string2==="LTD" || string2===" AB" || string2===" AS" || string2===" BV" || string2===" CO" || string2==="A/S" || string2==="LLC"){
+        string1=string.slice(0,string.length-3);
+    }else{
+        string1=string;
+        string2="";
+    }    
+    string3 = string1.toLowerCase().replace(/[^\s_'-]+/g, function (word) { return word.replace(/^./, function (firstLetter) { return firstLetter.toUpperCase(); }); });
+    
+    return string3 + string2 ;
+}
+
