@@ -44,7 +44,7 @@ catch(PDOException $e)
     echo "Connection failed: " . $e->getMessage();
     }
 
-$objQuery = $objConnect->prepare("SELECT b.Customer ,b.CustItemNo ,b.PetItemNo ,b.ItemName ,b.Year ,b.Period ,b.1 ,b.2 ,b.3 ,b.4 ,b.5 
+$objQuery = $objConnect->prepare("SELECT b.Customer ,b.CustItemNo ,b.PetItemNo ,b.ItemName ,b.Year ,b.Period ,b.1 ,b.2 ,b.3 ,b.4 , b.5, b.CustName
         FROM petainer_fcast.Key a 
         JOIN petainer_fcast.ForecastData b on a.Customer = b.Customer and a.Year = b.Year and a.Period = b.Period 
         where a.Key = '$key'"
@@ -66,13 +66,30 @@ while ( $row = $objQuery->fetch(PDO::FETCH_ASSOC) ) {
   	$row_array['three'] = $row['3'];    
         $row_array['four'] = $row['4'];  
         $row_array['five'] = $row['5'];
+        $row_array['CustName'] = $row['CustName'];
     array_push($return_arr,$row_array);
 }
 
 echo json_encode($return_arr);
   
 $objConnect = null;  
+
+try {
+    $objConnect2 = new PDO("mysql:host=$FCADR;dbname=$FCDB;charset=UTF8", $FCUID, $FCPWD);
+    // set the PDO error mode to exception
+    $objConnect2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+catch(PDOException $e)
+    {
+    echo "Connection failed: " . $e->getMessage();
+    }
+
+$objQuery2 = $objConnect2->prepare("UPDATE petainer_fcast.Key a SET a.Status = a.Status+1 where a.Key = '$key'");
+
+$objQuery2->execute();
   
+$objConnect2 = null;  
+
 }
 
 if ($action == 'updatelist') { 

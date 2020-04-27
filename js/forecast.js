@@ -49,7 +49,7 @@ var keylist = function(key) {
                         tabledata.push(row);
                     }
 
-                    $('#customerheader').html("Welcome Customer: " +data[0].Customer + "</br>Active adjustment period will end: " + dateLeft);
+                    $('#customerheader').html("Welcome: " +CFL(data[0].CustName) + " (" + data[0].Customer + ")" + "</br>Active adjustment period will end: " + dateLeft);
 
                     $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'One', title: moment(data[0].Period,"MM").format("YYYY MMMM")});
                     $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Two', title: moment(data[0].Period,"MM").add(1,"M").format("YYYY MMMM")});
@@ -148,9 +148,25 @@ function GetKey(){
     
 }
 
-
 $("#exportbutton").click(function () {
 $('#itemtable').tableExport({type:'excel',
-                        mso: {fileFormat:'xmlss',
-                              worksheetName: ['Forecast']}});
+    mso: {fileFormat:'xmlss',
+    worksheetName: ['Forecast']}});
 });
+
+function CFL(string) {
+    
+    string = string.trim().toUpperCase();
+    
+    string2=string.slice(-3);
+    
+    if(string2==="LTD" || string2===" AB" || string2===" AS" || string2===" BV" || string2===" CO" || string2==="A/S" || string2==="LLC"){
+        string1=string.slice(0,string.length-3);
+    }else{
+        string1=string;
+        string2="";
+    }    
+    string3 = string1.toLowerCase().replace(/[^\s_'-]+/g, function (word) { return word.replace(/^./, function (firstLetter) { return firstLetter.toUpperCase(); }); });
+    
+    return string3 + string2 ;
+}
