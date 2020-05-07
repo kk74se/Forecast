@@ -13,7 +13,13 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
-$('#customerheader').html("Local forecast SE1</br>");
+if(moment().format('DD') <=10){
+    var $extactive="Customer forecast site is active";
+}else{
+    var $extactive="";
+}
+$('#customerheader').html("Local forecast SE1</br>" + $extactive);
+
 
 moment.updateLocale('en-gb', {
 });
@@ -31,7 +37,7 @@ var viewlist = function(key) {
         
         $.ajax({
             type: "GET",
-            url: "http://10.7.3.34/forecast/local_data.php?action=localviewlist",
+            url: "http://10.7.3.34/forecast/local_data_DEV.php?action=localviewlist",
             cache: false,
             dataType: "json",
             success: function(data) {
@@ -50,17 +56,153 @@ var viewlist = function(key) {
                         }else{
                             changes="";
                         }    
-                        row={"CustNo": data[i].Customer,"CustName": CFL(data[i].CustomerName), "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC, "Changes":changes};
+                        row={"External": data[i].External,"CustNo": data[i].Customer,"CustName": CFL(data[i].CustomerName), "CustItemNo":data[i].CustItemNo, "ItemNo":data[i].ItemNo,"ItemName":data[i].ItemNo + " | " + data[i].ItemName, "Year": data[i].Year, "Period": data[i].Period,"UpdateStatus":'', "One": data[i].one, "PREV1":data[i].PREV1,"Two": data[i].two,"PREV2":data[i].PREV2, "Three": data[i].three,"PREV3":data[i].PREV3, "Four": data[i].four,"PREV4":data[i].PREV4, "Five": data[i].five, "TNR": data[i].TNR, "Status":LocalTM3,"UPDC":data[i].UPDC, "Changes":changes};
 
                         tabledata.push(row);
                     }
-                    $('#customerheader').html("Local forecast </br> Year: " + data[0].Year + " Period: " + data[0].Period);
-                    $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'One', title: moment(data[0].Period,"MM").format("YYYY MMMM")});
-                    $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Two', title: moment(data[0].Period,"MM").add(1,"M").format("YYYY MMMM")});
-                    $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Three', title: moment(data[0].Period,"MM").add(2,"M").format("YYYY MMMM")});
-                    $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Four', title: moment(data[0].Period,"MM").add(3,"M").format("YYYY MMMM")});
-                    $('#itemtable').bootstrapTable('updateColumnTitle', {field: 'Five', title: moment(data[0].Period,"MM").add(4,"M").format("YYYY MMMM")});
-                    $('#itemtable').bootstrapTable('refreshOptions', {});
+                    $('#customerheader').html("Local forecast </br> Year: " + data[0].Year + " Period: " + data[0].Period + "</br>" + $extactive);
+                    $('#itemtable').bootstrapTable('refreshOptions', {columns: [{field: 'External',
+                                                                                title: 'External',
+                                                                                visible: false
+                                                                              }, {
+                                                                                field: 'UPDC',
+                                                                                title: 'CU',
+                                                                                visible: true,
+                                                                                formatter: 'UPDCFormatter',
+                                                                                filterControl: 'select',
+                                                                                filterStrictSearch: false
+                                                                              }, {
+                                                                                field: 'CustNo',
+                                                                                title: 'Customer No',
+                                                                                visible: true,
+                                                                                filterControl: 'select',
+                                                                                filterStrictSearch: false
+                                                                              }, {
+                                                                                field: 'CustName',
+                                                                                title: 'Customer',
+                                                                                visible: true,
+                                                                                filterControl: 'select',
+                                                                                filterStrictSearch: false
+                                                                              }, {
+                                                                                field: 'CustItemNo',
+                                                                                title: 'Cu. Item No',
+                                                                                visible: true
+                                                                              }, {
+                                                                                field: 'ItemNo',
+                                                                                title: 'Item',
+                                                                                visible: false
+                                                                              }, {
+                                                                                field: 'ItemName',
+                                                                                title: 'Item',
+                                                                                visible: true
+                                                                              }, {
+                                                                                field: 'Year',
+                                                                                title: 'Year',
+                                                                                visible: false
+                                                                              }, {
+                                                                                field: 'Period',
+                                                                                title: 'Period',
+                                                                                visible: false
+                                                                              }, {
+                                                                                field: 'Changes',
+                                                                                title: 'Changes',
+                                                                                visible: true
+                                                                              }, {
+                                                                                field: 'One',
+                                                                                title: moment(data[0].Period,"MM").format("YYYY MMMM"),
+                                                                                visible: true,
+                                                                                cellStyle: 'cellStyle1',
+                                                                                editable: {
+                                                                                  type: 'text',
+                                                                                  noeditFormatter: function(value, row) {
+                                                                                    if(row.External !== 1) {
+                                                                                      return false;
+                                                                                    }
+                                                                                    return value;
+                                                                                  }
+                                                                                }
+                                                                              }, {
+                                                                                field: 'PREV1',
+                                                                                title: 'PREV1',
+                                                                                visible: false
+                                                                              }, {
+                                                                                field: 'Two',
+                                                                                title: moment(data[0].Period,"MM").add(1,"M").format("YYYY MMMM"),
+                                                                                visible: true,
+                                                                                cellStyle: 'cellStyle2',
+                                                                                editable: {
+                                                                                  type: 'text',
+                                                                                  noeditFormatter: function(value, row) {
+                                                                                    if(row.External !== 1) {
+                                                                                      return false;
+                                                                                    }
+                                                                                    return value;
+                                                                                  }
+                                                                                }
+                                                                              }, {
+                                                                                field: 'PREV2',
+                                                                                title: 'PREV2',
+                                                                                visible: false
+                                                                              }, {
+                                                                                field: 'Three',
+                                                                                title: moment(data[0].Period,"MM").add(2,"M").format("YYYY MMMM"),
+                                                                                visible: true,
+                                                                                cellStyle: 'cellStyle3',
+                                                                                editable: {
+                                                                                  type: 'text',
+                                                                                  noeditFormatter: function(value, row) {
+                                                                                    if(row.External !== 1) {
+                                                                                      return false;
+                                                                                    }
+                                                                                    return value;
+                                                                                  }
+                                                                                }
+                                                                              }, {
+                                                                                field: 'PREV3',
+                                                                                title: 'PREV3',
+                                                                                visible: false
+                                                                              }, {
+                                                                                field: 'Four',
+                                                                                title: moment(data[0].Period,"MM").add(3,"M").format("YYYY MMMM"),
+                                                                                visible: true,
+                                                                                cellStyle: 'cellStyle4',
+                                                                                editable: {
+                                                                                  type: 'text',
+                                                                                  noeditFormatter: function(value, row) {
+                                                                                    if(row.External !== 1) {
+                                                                                      return false;
+                                                                                    }
+                                                                                    return value;
+                                                                                  }
+                                                                                }
+                                                                              }, {
+                                                                                field: 'PREV4',
+                                                                                title: 'PREV4',
+                                                                                visible: false
+                                                                              }, {
+                                                                                field: 'Five',
+                                                                                title: moment(data[0].Period,"MM").add(4,"M").format("YYYY MMMM"),
+                                                                                visible: true,
+                                                                                cellStyle: 'cellStyle5',
+                                                                                editable: {
+                                                                                  type: 'text',
+                                                                                  noeditFormatter: function(value, row) {
+                                                                                    if(row.External !== 1) {
+                                                                                      return false;
+                                                                                    }
+                                                                                    return value;
+                                                                                  }
+                                                                                }
+                                                                              }, {
+                                                                                field: 'TNR',
+                                                                                title: 'TNR',
+                                                                                visible: false
+                                                                              }, {
+                                                                                field: 'Status',
+                                                                                title: 'FC <i class="fas fa-arrow-right" style="color:green;"></i> M3',
+                                                                                visible: true
+                                                                              }]
+                                                                            });
                     $('#itemtable').bootstrapTable("load", tabledata);
                     
                 }
@@ -105,6 +247,9 @@ var viewrecipients = function() {
 
                         tabledatarec.push(row);
                     }
+
+                    $('#recipientstable').bootstrapTable('refreshOptions', {});
+                    
                     $('#recipientstable').bootstrapTable("load", tabledatarec);
                     
                 }
@@ -117,7 +262,7 @@ $("#updateM3datasetforecastbutton").click(function () {
     var count=0;
     data=$('#itemtable').bootstrapTable('getData');
 
-	$("#updateM3datasetforecastbutton").prop("disabled",true);
+    $("#updateM3datasetforecastbutton").prop("disabled",true);
     $("#updateM3datasetforecastbutton").addClass("btn-warning").removeClass("btn-success");
     $("#updateM3datasetforecastbutton").html('<i class="fas fa-wrench" aria-hidden="true"></i> Updating');
 
@@ -424,6 +569,24 @@ function cellStyle2(value, row, index) {
     }
   }
   
+  function rowStyle1(row, index) {
+    if (row.External==1) {
+      return {
+        css: {
+           'font-style': 'italic',
+           color: 'grey'
+        }
+      };
+  }else {
+      return {
+        css: {
+          'font-style': 'normal',
+          color: 'black'
+        }
+      };
+    }
+  }   
+  
   function TableActions (value, row, index) {
     if(row.Status>0){
             return [
@@ -542,6 +705,37 @@ function onClickCell(event, field, value, rowdata, $element) {
                     $('#changestable').bootstrapTable('refreshOptions', {});
                     $('#changestable').bootstrapTable("load", changestabledata);
                     $('#Changesmodal').modal('show');
+                    
+                    var $table = $('#table')
+
+                        $(function() {
+                          $table.bootstrapTable({
+                            columns: [{field: 'One', title: moment(rowdata.Period,"MM").format("YYYY MMMM"),
+                              editable: {
+                                type: 'text',
+                                noeditFormatter: function(value, row) {
+                                  if(row.External === "1") {
+                                    return false
+                                  }
+                                  return value;
+                                }
+                              }},
+                                {field: 'name',
+                              title: 'names',
+                              sortable: true,
+                              editable: {
+                                type: 'text',
+                                noeditFormatter: function(value, row) {
+                                  if(row.name === "test123") {
+                                    return false;
+                                  }
+
+                                  return value;
+                                }
+                              }
+                            }]
+                          });
+                        });
                     
                 }
 
