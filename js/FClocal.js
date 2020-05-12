@@ -13,6 +13,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
+//Check if the external site is active / date is before the 11'th
 if(moment().format('DD') <=10){
     var $extactive="Customer forecast site is active";
 }else{
@@ -37,7 +38,7 @@ var viewlist = function(key) {
         
         $.ajax({
             type: "GET",
-            url: "http://10.7.3.34/forecast/local_data_DEV.php?action=localviewlist",
+            url: "http://10.7.3.34/forecast/local_data.php?action=localviewlist",
             cache: false,
             dataType: "json",
             success: function(data) {
@@ -66,7 +67,7 @@ var viewlist = function(key) {
                                                                                 visible: false
                                                                               }, {
                                                                                 field: 'UPDC',
-                                                                                title: 'CU',
+                                                                                title: 'C-Upd',
                                                                                 visible: true,
                                                                                 formatter: 'UPDCFormatter',
                                                                                 filterControl: 'select',
@@ -85,7 +86,7 @@ var viewlist = function(key) {
                                                                                 filterStrictSearch: false
                                                                               }, {
                                                                                 field: 'CustItemNo',
-                                                                                title: 'Cu. Item No',
+                                                                                title: 'C. Item',
                                                                                 visible: true
                                                                               }, {
                                                                                 field: 'ItemNo',
@@ -115,7 +116,7 @@ var viewlist = function(key) {
                                                                                 editable: {
                                                                                   type: 'text',
                                                                                   noeditFormatter: function(value, row) {
-                                                                                    if(row.External !== 1) {
+                                                                                    if(row.External !== 2) { //0=not external, 1=downloaded from external, 2=external active no edit.
                                                                                       return false;
                                                                                     }
                                                                                     return value;
@@ -133,7 +134,7 @@ var viewlist = function(key) {
                                                                                 editable: {
                                                                                   type: 'text',
                                                                                   noeditFormatter: function(value, row) {
-                                                                                    if(row.External !== 1) {
+                                                                                    if(row.External !== 2) { //0=not external, 1=downloaded from external, 2=external active no edit.
                                                                                       return false;
                                                                                     }
                                                                                     return value;
@@ -151,7 +152,7 @@ var viewlist = function(key) {
                                                                                 editable: {
                                                                                   type: 'text',
                                                                                   noeditFormatter: function(value, row) {
-                                                                                    if(row.External !== 1) {
+                                                                                    if(row.External !== 2) { //0=not external, 1=downloaded from external, 2=external active no edit.
                                                                                       return false;
                                                                                     }
                                                                                     return value;
@@ -169,7 +170,7 @@ var viewlist = function(key) {
                                                                                 editable: {
                                                                                   type: 'text',
                                                                                   noeditFormatter: function(value, row) {
-                                                                                    if(row.External !== 1) {
+                                                                                    if(row.External !== 2) { //0=not external, 1=downloaded from external, 2=external active no edit.
                                                                                       return false;
                                                                                     }
                                                                                     return value;
@@ -187,7 +188,7 @@ var viewlist = function(key) {
                                                                                 editable: {
                                                                                   type: 'text',
                                                                                   noeditFormatter: function(value, row) {
-                                                                                    if(row.External !== 1) {
+                                                                                    if(row.External !== 2) { //0=not external, 1=downloaded from external, 2=external active no edit.
                                                                                       return false;
                                                                                     }
                                                                                     return value;
@@ -454,14 +455,10 @@ function InM3Formatter (value, row, index) {
 }
 
 function UPDCFormatter (value, row, index) {
-    if(row.UPDC =="1"){
-        return ['OK'].join('');
-    }else if(row.UpdateM3Status == "0"){
-        return ['-'].join('');
+    if(row.UPDC ===1){
+        return 'Yes';
     }else {
-        return [
-            '' 
-        ].join('');
+        return '';
     }
 }
   
@@ -570,7 +567,7 @@ function cellStyle2(value, row, index) {
   }
   
   function rowStyle1(row, index) {
-    if (row.External==1) {
+    if (row.External==2) {
       return {
         css: {
            'font-style': 'italic',
