@@ -1,167 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+    <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
 
-    <title>Forecast</title>
-    
-    <link href="css/bootstrap.min.css" rel="stylesheet">   
-    <link href="css/forecast.css" rel="stylesheet">
-    <link href="css/plugins/bootstrap-table.css" rel="stylesheet">
-    <link href="css/plugins/bootstrap-editable.css" rel="stylesheet">
-    <link href="css/plugins/bootstrap-table-filter-control.css" rel="stylesheet">
+        <title>Forecast</title>
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.bundle.js"></script>  
-    <script src="js/plugins/bootstrap-table.js"></script>   
-    <script src="js/plugins/bootstrap-editable.js"></script>
-    <script src="js/plugins/bootstrap-table-editable.js"></script>    
-    <script src="js/plugins/bootstrap-table-filter-control.js"></script> 
-    <script src="js/plugins/moment-with-locales.min.js"></script>    
-    <script src="https://kit.fontawesome.com/f99af2746e.js" crossorigin="anonymous"></script>
-    
-</head>
+        <link href="css/bootstrap.min.css" rel="stylesheet">   
+        <link href="css/forecast.css" rel="stylesheet">
+        <link href="css/plugins/bootstrap-table.css" rel="stylesheet">
+        <link href="css/plugins/bootstrap-editable.css" rel="stylesheet">
+        <link href="css/plugins/bootstrap-table-filter-control.css" rel="stylesheet">
 
-<body>
-    
-<div class="container-fluid">    
-    
-<div class="row">
-        <div class="padtop15 col-md-2">    
-            <a><img class="img-fluid" src="img/logo.png" ALT="Petainer" WIDTH=288 HEIGHT=60></a>
-        </div>
-        <div class="col-md-4 padtop15">
-            <a class="item-text" id="customerheader"></a>
-        </div>     
-        <div class="col-md-3 padtop15">
-            <a class="item-text" id="updateheader"></a>
-        </div> 
-    	<div class='col-md-1 padtop15 padbottom15'>
-            <div id="spinner" class="pull-right" style="display:none">
-                <img id="img-spinner" src="img/ajax-loader.gif" alt="Loading"/>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.bundle.js"></script>  
+        <script src="js/plugins/bootstrap-table.js"></script>   
+        <script src="js/plugins/bootstrap-editable.js"></script>
+        <script src="js/plugins/bootstrap-table-editable.js"></script>    
+        <script src="js/plugins/bootstrap-table-filter-control.js"></script> 
+        <script src="js/plugins/moment-with-locales.min.js"></script>    
+        <script src="https://kit.fontawesome.com/f99af2746e.js" crossorigin="anonymous"></script>
+
+    </head>
+
+    <body>
+
+        <div class="container-fluid">    
+
+            <div class="row">
+                <div class="padtop15 col-md-2">    
+                    <a><img class="img-fluid" src="img/logo.png" ALT="Petainer" WIDTH=288 HEIGHT=60></a>
+                </div>
+                <div class="col-md-4 padtop15">
+                    <a class="item-text" id="customerheader"></a>
+                </div>     
+                <div class="col-md-3 padtop15">
+                    <a class="item-text" id="updateheader"></a>
+                </div> 
+                <div class='col-md-1 padtop15 padbottom15'>
+                    <div id="spinner" class="pull-right" style="display:none">
+                        <img id="img-spinner" src="img/ajax-loader.gif" alt="Loading"/>
+                    </div> 
+                </div>
+                <div class="col-md-2 padtop15">
+                    <button type="button" style="width:100%; height:100%;" class="btn btn-primary btn-block btn-lg" id="updateM3datasetforecastbutton"><i class="fas fa-arrow-up" aria-hidden="true"></i> Update M3 Dataset</button>
+                </div>
             </div> 
-        </div>
-        <div class="col-md-2 padtop15">
-            <button type="button" style="width:100%; height:100%;" class="btn btn-primary btn-block btn-lg" id="updateM3datasetforecastbutton"><i class="fas fa-arrow-up" aria-hidden="true"></i> Update M3 Dataset</button>
-        </div>
-    </div> 
-    <hr>
-    <ul class="nav nav-tabs">
-        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#ForecastItems">Forecast</a></li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Recipients">Recipients</a></li>
-    </ul>
-    <div class="tab-content">
-        <div id="ForecastItems" class="tab-pane active">
-            <div class="row">
-                <div class="col-12 padtop15">
-                    <table class="itemtabletext" data-toggle="table" data-filter-control="true" id="itemtable" data-row-style="rowStyle1" data-thead-classes="thead-light">
-                        <thead>
-                            <tr>      
+            <hr>
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#ForecastItems">Forecast</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Recipients">Recipients</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="ForecastItems" class="tab-pane active">
+                    <div class="row">
+                        <div class="col-12 padtop15">
+                            <table class="itemtabletext" data-toggle="table" data-filter-control="true" id="itemtable" data-row-style="rowStyle1" data-thead-classes="thead-light">
+                                <thead>
+                                    <tr>      
 
-                                
-                            </tr>
-                        </thead>                               
-                    </table> 
+
+                                    </tr>
+                                </thead>                               
+                            </table> 
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div id="Recipients" class="tab-pane fade">
-            <div class="row">
-                <div class="col-12 padtop15">
-                    <table class="itemtabletext" data-toggle="table" id="recipientstable" data-thead-classes="thead-light">
-                        <thead>
-                            <tr>
-                                <th data-field="Customer" data-visible="true">Customer</th>
-                                <th data-field="CustomerName" data-visible="true">Customer Name</th>
-                                <th data-field="Status" data-visible="false">Status</th>
-                                <th data-field="TOemail" data-editable="true" data-visible="true">TO Email</th>
-                                <th data-field="CCemail" data-editable="true" data-visible="true">CC Email</th>
-                                <th data-field="UPDC" data-visible="false">UPDC</th>
-                                <th data-field="OnlineFC" data-align="center" data-cell-style="cellStyle5">Online FC</th>
-                                <th data-formatter="TableActions">Action</th>
-                            </tr>
-                        </thead>                               
-                    </table> 
+                <div id="Recipients" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-12 padtop15">
+                            <table class="itemtabletext" data-toggle="table" id="recipientstable" data-thead-classes="thead-light">
+                                <thead>
+                                    <tr>
+                                        <th data-field="Customer" data-visible="true">Customer</th>
+                                        <th data-field="CustomerName" data-visible="true">Customer Name</th>
+                                        <th data-field="Status" data-visible="false">Status</th>
+                                        <th data-field="TOemail" data-editable="true" data-visible="true">TO Email</th>
+                                        <th data-field="CCemail" data-editable="true" data-visible="true">CC Email</th>
+                                        <th data-field="UPDC" data-visible="false">UPDC</th>
+                                        <th data-field="OnlineFC" data-align="center" data-cell-style="cellStyle5">Online FC</th>
+                                        <th data-formatter="TableActions">Action</th>
+                                    </tr>
+                                </thead>                               
+                            </table> 
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </div>    
         </div>
-    </div>    
-</div>
-    
-    <!-- Modal -->
-<div id="Recipientsmodal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
 
-    <!-- Modal content-->
-    <div class="modal-content">
-        <div class="bg-danger" id="Recipientsmodalheader">
-            <h4 class="modal-title text-center" style="color:white;" id="Recipientsmodalheadertext"></h4>
-        </div>
-        <div class="modal-body">        
-            <div class="row">
-                <h4 class="w-100 text-center">Confirm deletion of record</h4>
-                <hr>
-            </div>
-        </div>
-        <div class="modal-footer bg-white" id="Recipientsmodalfooter">
-            <button type="button" class="btn btn-danger mr-auto" id="DeleteRecipientsButton"><span class="oi oi-warning"></span> Delete</button>
-            <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
-        </div>
-    </div>
+        <!-- Modal -->
+        <div id="Recipientsmodal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
 
-  </div>
-</div>
-    
-    <!-- Changes Modal -->
-<div id="Changesmodal" class="modal fade" role="dialog">
-  <div class="modal-dialog modal-lg">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-        <div class="bg-success" id="Changesmodalheader">
-            <h4 class="modal-title text-center" style="color:white;" id="Changesmodalheadertext"></h4>
-        </div>
-        <div class="modal-body">        
-            <div class="row">
-                <div class="col-12">
-                    <table class="changestabletext" data-toggle="table" id="changestable">
-                        <thead>
-                            <tr>
-                                <th data-field="Date">Date</th>
-                                <th data-field="One" data-halign="center">Current</th>
-                                <th data-field="Two" data-halign="center">+ 1</th>
-                                <th data-field="Three" data-halign="center">+ 2</th>
-                                <th data-field="Four" data-halign="center">+ 3</th>
-                                <th data-field="Five" data-halign="center">+ 4</th>
-                            </tr>
-                        </thead>                               
-                    </table>
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="bg-danger" id="Recipientsmodalheader">
+                        <h4 class="modal-title text-center" style="color:white;" id="Recipientsmodalheadertext"></h4>
+                    </div>
+                    <div class="modal-body">        
+                        <div class="row">
+                            <h4 class="w-100 text-center">Confirm deletion of record</h4>
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-white" id="Recipientsmodalfooter">
+                        <button type="button" class="btn btn-danger mr-auto" id="DeleteRecipientsButton"><span class="oi oi-warning"></span> Delete</button>
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    </div>
                 </div>
+
             </div>
         </div>
-        <div class="modal-footer bg-white" id="Changesmodalfooter">
-            <button type="button" class="btn btn-info" data-dismiss="modal">OK</button>
+
+        <!-- Changes Modal -->
+        <div id="Changesmodal" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="bg-success" id="Changesmodalheader">
+                        <h4 class="modal-title text-center" style="color:white;" id="Changesmodalheadertext"></h4>
+                    </div>
+                    <div class="modal-body">        
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="changestabletext" data-toggle="table" id="changestable">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="Date">Date</th>
+                                            <th data-field="One" data-halign="center">Current</th>
+                                            <th data-field="Two" data-halign="center">+ 1</th>
+                                            <th data-field="Three" data-halign="center">+ 2</th>
+                                            <th data-field="Four" data-halign="center">+ 3</th>
+                                            <th data-field="Five" data-halign="center">+ 4</th>
+                                        </tr>
+                                    </thead>                               
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-white" id="Changesmodalfooter">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">OK</button>
+                    </div>
+                </div>
+
+            </div>
         </div>
-    </div>
 
-  </div>
-</div>
+        <script src="js/FClocal.js"></script>
 
-<script src="js/FClocal.js"></script>
+        <script>
+            $(document).ready(function () {
 
-<script>
-$(document).ready(function() {
+                viewlist();
+                viewrecipients();
 
-    viewlist();
-    viewrecipients();
-    
-} );   
-</script>
+            });
+        </script>
 
 </html>
