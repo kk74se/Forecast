@@ -25,7 +25,7 @@ $objDB = mssql_select_db($FCDB);
 mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
 
 $strSQL = "SELECT a.Customer
-	,LTRIM(RTRIM(b.OKCUNM)) as 'CustomerName'
+	,LTRIM(RTRIM(a.CustName)) as 'CustomerName'
 	,a.CustItemNo
 	,a.PetItemNo
 	,a.ItemName
@@ -42,13 +42,13 @@ $strSQL = "SELECT a.Customer
 	,a.[5]
 	,a.TNR
 	,a.TND
-        ,a.TM3
-        ,a.UPDC
-        ,(select count(ID) d
-            from dbo.FCChanges
-            where a.Customer=Customer and a.Year = Year and a.Period = ActiveFCPeriod and a.PetItemNo = PetItemNo) as 'Changes'
+    ,a.TM3
+    ,a.UPDC
+    ,a.EXT
+    ,(select count(ID) d
+         from dbo.FCChanges
+         where a.Customer=Customer and a.Year = Year and a.Period = ActiveFCPeriod and a.PetItemNo = PetItemNo) as 'Changes'
     FROM dbo.ForecastData a
-    left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] b with(NOLOCK) on a.Customer = b.OKCUNO
     left join dbo.ForecastData c on a.Customer=c.Customer and a.PetItemNo=c.PetItemNo and c.Period = month(DATEADD(month, -1, GETDATE())) and c.Year = year(DATEADD(month, -1, GETDATE()))
     where a.[Year]=year(getdate()) and a.[Period]=month(getdate())
     order by TNR desc, Customer";
@@ -80,6 +80,7 @@ while ( $row = mssql_fetch_assoc( $objQuery ) ) {
         $row_array['TM3'] = $row['TM3'];
         $row_array['UPDC'] = $row['UPDC'];
         $row_array['Changes'] = $row['Changes'];
+		$row_array['External'] = $row['EXT'];
     array_push($return_arr,$row_array);
 }
 
@@ -520,7 +521,9 @@ if (isset($_POST['ChangeDateTime']) && !empty($_POST['ChangeDateTime'])) {
                                             THEN 0
                                     ELSE 1
                                     END;
-                    select @RE+@RE2 as Resultat;
+                    select @RE+@RE2 as Resultat,(select count(ID) d
+            				from dbo.FCChanges
+            				where '".$customer."'=Customer and '".$year."' = Year and '".$period."' = ActiveFCPeriod and '".$item."' = PetItemNo) as 'Changes';
                     COMMIT;";
 
         $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
@@ -530,6 +533,7 @@ if (isset($_POST['ChangeDateTime']) && !empty($_POST['ChangeDateTime'])) {
 
         while ( $row = mssql_fetch_assoc($objQuery)) {
             $return_arr['Resultat'] = $row['Resultat'];
+        	$return_arr['Changes'] = $row['Changes'];
             $return_arr['Index'] = $index;
         }
 
@@ -554,12 +558,14 @@ $strSQL = "SELECT distinct b.UCCUNO as 'CustomerM3'
     ,LTRIM(RTRIM(case when c.OKCUNM is null then d.OKCUNM else c.OKCUNM end)) as 'CustomerName'
 	,ISNULL(TOemail,'') as 'TOemail'
 	,ISNULL(CCemail,'') as 'CCemail'
-    ,e.UPDC
+    ,e.Status
+    ,f.[Key]
         FROM dbo.Recipients a
         full join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[O001002] b with(NOLOCK) on a.Customer = b.UCCUNO
         left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] c with(NOLOCK) on a.Customer = c.OKCUNO
         left join [10.7.14.205].[M3FDBPRD].[MVXJDTA].[OCUSMA] d with(NOLOCK) on b.UCCUNO = d.OKCUNO
-        left join [FORECAST_EXT]...[petainer_fcast.ForecastData] e on b.UCCUNO = e.Customer and e.UPDC = 1
+        left join [FORECAST_EXT]...[petainer_fcast.Key] e on b.UCCUNO = e.Customer and e.Status > 0
+        left join dbo.[Key] f on b.UCCUNO = f.Customer
         order by 1,2";
 
 $objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
@@ -573,7 +579,8 @@ while ( $row = mssql_fetch_assoc( $objQuery ) ) {
 	$row_array['CustomerName'] = $row['CustomerName'];
 	$row_array['TOemail'] = $row['TOemail'];
 	$row_array['CCemail'] = $row['CCemail'];
-	$row_array['UPDC'] = $row['UPDC'];
+	$row_array['Counter'] = $row['Status'];
+	$row_array['Key'] = $row['Key'];
     array_push($return_arr,$row_array);
 }
 
@@ -701,6 +708,74 @@ if (isset($_POST['customer']) && !empty($_POST['customer'])) {
 
         mssql_close($objConnect); 
         
+}
+
+if ($action == 'localviewchanges') {
+
+if (isset($_POST['customer']) && !empty($_POST['customer'])) {
+	$customer = test_input($_POST['customer']);
+} else {
+	$return_arr['Error'] = "Customer måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['item']) && !empty($_POST['item'])) {
+	$item = test_input($_POST['item']);
+} else {
+	$return_arr['Error'] = "Item måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['year']) && !empty($_POST['year'])) {
+	$year = test_input($_POST['year']);
+} else {
+	$return_arr['Error'] = "Year måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+if (isset($_POST['period']) && !empty($_POST['period'])) {
+	$period = test_input($_POST['period']);
+} else {
+	$return_arr['Error'] = "Period måste anges";
+	echo json_encode($return_arr);
+	exit();
+}
+
+$objConnect = mssql_connect($FCADR,$FCUID,$FCPWD);
+$objDB = mssql_select_db($FCDB);
+
+mssql_query("SET ANSI_NULLS ON"); mssql_query("SET ANSI_WARNINGS ON");
+
+$strSQL = "SELECT [ChangedFCPeriod]
+	,[QuantityFrom]
+	,[QuantityTo]
+	,[ChangedBy]
+	,[ChangeDateTime]
+FROM [dbo].[FCChanges]
+where Customer = '".$customer."' and PetItemNo = '".$item."' and [Year] = '".$year."' and [ActiveFCPeriod] = '".$period."'
+order by ID";
+
+$objQuery = mssql_query($strSQL) or die ("Error Query [".$strSQL."]");
+
+$result = $objQuery;
+//$result = $objQuery->fetch(PDO::FETCH_ASSOC);
+
+while ( $row = mssql_fetch_assoc( $objQuery ) ) {
+	$row_array['ChangedFCPeriod'] = $row['ChangedFCPeriod'];
+    $row_array['QuantityFrom'] = $row['QuantityFrom'];
+	$row_array['QuantityTo'] = $row['QuantityTo'];
+	$row_array['ChangedBy'] = $row['ChangedBy'];
+	$row_array['ChangeDateTime'] = $row['ChangeDateTime'];
+    array_push($return_arr,$row_array);
+}
+
+echo json_encode($return_arr);
+
+mssql_close($objConnect);
+
 }
 
 
